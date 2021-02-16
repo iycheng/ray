@@ -87,7 +87,8 @@ TYPES_A = {
 MULTI_WORKER_CLUSTER = dict(
     SMALL_CLUSTER, **{
         "available_node_types": TYPES_A,
-        "head_node_type": "empty_node"
+        "head_node_type": "empty_node",
+        "worker_default_node_type": "m4.large",
     })
 
 

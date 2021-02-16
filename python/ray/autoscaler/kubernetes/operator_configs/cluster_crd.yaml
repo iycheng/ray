@@ -25,6 +25,7 @@ spec:
             required:
             - podTypes
             - headPodType
+            - workerDefaultPodType
             properties:
               maxWorkers:
                 description: The maximum number of workers nodes to launch in addition to the
@@ -4263,6 +4264,9 @@ spec:
               headPodType:
                 description: Specifies the head node type.
                 type: string
+              workerDefaultPodType:
+                description: Specifies the default worker node type.
+                type: string 
               headStartRayCommands:
                 description: Commands to start Ray on the head node.
                 type: array

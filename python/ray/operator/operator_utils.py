@@ -17,6 +17,7 @@ CONFIG_FIELDS = {
     "upscalingSpeed": "upscaling_speed",
     "idleTimeoutMinutes": "idle_timeout_minutes",
     "headPodType": "head_node_type",
+    "workerDefaultPodType": "worker_default_node_type",
     "workerStartRayCommands": "worker_start_ray_commands",
     "headStartRayCommands": "head_start_ray_commands",
     "podTypes": "available_node_types"
