@@ -87,7 +87,7 @@ py_test(
 
 py_test(
     name = "test_function_api",
-    size = "medium",
+    size = "small",
     srcs = ["tests/test_function_api.py"],
     deps = [":tune_lib"],
     tags = ["exclusive"],
