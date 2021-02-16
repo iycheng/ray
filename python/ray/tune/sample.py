@@ -1,4 +1,5 @@
 import logging
+import random
 from copy import copy
 from inspect import signature
 from math import isclose
@@ -294,7 +295,7 @@ class Categorical(Domain):
                    spec: Optional[Union[List[Dict], Dict]] = None,
                    size: int = 1):
 
-            items = np.random.choice(domain.categories, size=size).tolist()
+            items = random.choices(domain.categories, k=size)
             return items if len(items) > 1 else domain.cast(items[0])
 
     default_sampler_cls = _Uniform
@@ -470,7 +471,7 @@ def choice(categories: List):
     """Sample a categorical value.
 
     Sampling from ``tune.choice([1, 2])`` is equivalent to sampling from
-    ``np.random.choice([1, 2])``
+    ``random.choice([1, 2])``
 
     """
     return Categorical(categories).uniform()
