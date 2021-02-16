@@ -333,7 +333,7 @@ class NestedSpacesTest(unittest.TestCase):
     def test_invalid_model2(self):
         ModelCatalog.register_custom_model("invalid2", InvalidModel2)
         self.assertRaisesRegexp(
-            ValueError, "State output is not a list",
+            ValueError, "Expected output shape of",
             lambda: PGTrainer(
                 env="CartPole-v0", config={
                     "model": {

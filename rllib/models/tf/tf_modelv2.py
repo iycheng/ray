@@ -107,8 +107,7 @@ class TFModelV2(ModelV2):
         if isinstance(struct, tf.keras.models.Model):
             ret = {}
             for var in struct.variables:
-                name = re.sub("/", ".", var.name)
-                key = current_key + "." + name
+                key = current_key + "." + re.sub("/", ".", var.name)
                 ret[key] = var
             return ret
         # Other TFModelV2: Include its vars into ours.
@@ -119,7 +118,7 @@ class TFModelV2(ModelV2):
             }
         # tf.Variable
         elif isinstance(struct, tf.Variable):
-            return {current_key: struct}
+            return {current_key + "." + struct.name: struct}
         # List/Tuple.
         elif isinstance(struct, (tuple, list)):
             ret = {}
@@ -134,7 +133,7 @@ class TFModelV2(ModelV2):
                 current_key += "_"
             ret = {}
             for key, value in struct.items():
-                sub_vars = TFModelV2._find_sub_modules(current_key + str(key),
+                sub_vars = TFModelV2._find_sub_modules(current_key + key,
                                                        value)
                 ret.update(sub_vars)
             return ret
