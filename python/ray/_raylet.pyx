@@ -1184,8 +1184,7 @@ cdef class CoreWorker:
                             self,
                             c_string name,
                             c_vector[unordered_map[c_string, double]] bundles,
-                            c_string strategy,
-                            c_bool is_detached):
+                            c_string strategy):
         cdef:
             CPlacementGroupID c_placement_group_id
             CPlacementStrategy c_strategy
@@ -1209,8 +1208,7 @@ cdef class CoreWorker:
                             CPlacementGroupCreationOptions(
                                 name,
                                 c_strategy,
-                                bundles,
-                                is_detached
+                                bundles
                             ),
                             &c_placement_group_id))
 
