@@ -16,7 +16,7 @@ pytestmark = pytest.mark.asyncio
 
 
 def setup_worker(name,
-                 backend_def,
+                 func_or_class,
                  init_args=None,
                  backend_config=BackendConfig(),
                  controller_name=""):
@@ -26,7 +26,7 @@ def setup_worker(name,
     @ray.remote
     class WorkerActor:
         def __init__(self):
-            self.worker = create_backend_replica(backend_def)(
+            self.worker = create_backend_replica(func_or_class)(
                 name, name + ":tag", init_args, backend_config,
                 controller_name)
 

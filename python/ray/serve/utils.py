@@ -359,26 +359,22 @@ def get_node_id_for_actor(actor_handle):
     return ray.actors()[actor_handle._actor_id.hex()]["Address"]["NodeID"]
 
 
-def import_attr(full_path: str):
-    """Given a full import path to a module attr, return the imported attr.
+def import_class(full_path: str):
+    """Given a full import path to a class name, return the imported class.
 
     For example, the following are equivalent:
-        MyClass = import_attr("module.submodule.MyClass")
+        MyClass = import_class("module.submodule.MyClass")
         from module.submodule import MyClass
 
     Returns:
-        Imported attr
+        Imported class
     """
 
     last_period_idx = full_path.rfind(".")
-    attr_name = full_path[last_period_idx + 1:]
+    class_name = full_path[last_period_idx + 1:]
     module_name = full_path[:last_period_idx]
     module = importlib.import_module(module_name)
-    return getattr(module, attr_name)
-
-
-async def mock_imported_function(batch):
-    return [await request.body() for request in batch]
+    return getattr(module, class_name)
 
 
 class MockImportedBackend:
