@@ -14,10 +14,6 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-# This version string is incremented to indicate breaking changes in the
-# protocol that require upgrading the client version.
-CURRENT_PROTOCOL_VERSION = "2020-02-01"
-
 
 class DataServicer(ray_client_pb2_grpc.RayletDataStreamerServicer):
     def __init__(self, basic_service: "RayletServicer"):
@@ -77,5 +73,4 @@ class DataServicer(ray_client_pb2_grpc.RayletDataStreamerServicer):
             python_version="{}.{}.{}".format(
                 sys.version_info[0], sys.version_info[1], sys.version_info[2]),
             ray_version=ray.__version__,
-            ray_commit=ray.__commit__,
-            protocol_version=CURRENT_PROTOCOL_VERSION)
+            ray_commit=ray.__commit__)
