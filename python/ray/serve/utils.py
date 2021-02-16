@@ -399,10 +399,7 @@ class MockImportedBackend:
         } for _ in range(len(batch))]
 
     async def other_method(self, batch):
-        responses = []
-        for request in batch:
-            responses.append(await request.body())
-        return responses
+        return [await request.body() for request in batch]
 
 
 def compute_iterable_delta(old: Iterable,
