@@ -184,8 +184,15 @@ class TestDDPG(unittest.TestCase):
 
         env = SimpleEnv
         batch_size = 100
-        obs_size = (batch_size, 1)
-        actions = np.random.random(size=(batch_size, 1))
+        if env is SimpleEnv:
+            obs_size = (batch_size, 1)
+            actions = np.random.random(size=(batch_size, 1))
+        elif env == "CartPole-v0":
+            obs_size = (batch_size, 4)
+            actions = np.random.randint(0, 2, size=(batch_size, ))
+        else:
+            obs_size = (batch_size, 3)
+            actions = np.random.random(size=(batch_size, 1))
 
         # Batch of size=n.
         input_ = self._get_batch_helper(obs_size, actions, batch_size)
