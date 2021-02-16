@@ -46,10 +46,9 @@ def validate_options(
             raise TypeError(f"Invalid option passed to remote(): {k}")
         validator = options[k]
         if len(validator) != 0:
-            if v is not None:
-                if not isinstance(v, validator[0]):
-                    raise ValueError(validator[2])
-                if not validator[1](v):
-                    raise ValueError(validator[2])
+            if not isinstance(v, validator[0]):
+                raise ValueError(validator[2])
+            if not validator[1](v):
+                raise ValueError(validator[2])
         out[k] = v
     return out

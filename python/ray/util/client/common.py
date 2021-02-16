@@ -82,11 +82,7 @@ class ClientRemoteFunc(ClientStub):
     def options(self, **kwargs):
         return OptionWrapper(self, kwargs)
 
-    def _remote(self, args=None, kwargs=None, **option_args):
-        if args is None:
-            args = []
-        if kwargs is None:
-            kwargs = {}
+    def _remote(self, args=[], kwargs={}, **option_args):
         return self.options(**option_args).remote(*args, **kwargs)
 
     def __repr__(self):
@@ -154,11 +150,7 @@ class ClientActorClass(ClientStub):
     def options(self, **kwargs):
         return ActorOptionWrapper(self, kwargs)
 
-    def _remote(self, args=None, kwargs=None, **option_args):
-        if args is None:
-            args = []
-        if kwargs is None:
-            kwargs = {}
+    def _remote(self, args=[], kwargs={}, **option_args):
         return self.options(**option_args).remote(*args, **kwargs)
 
     def __repr__(self):
@@ -238,11 +230,7 @@ class ClientRemoteMethod(ClientStub):
     def options(self, **kwargs):
         return OptionWrapper(self, kwargs)
 
-    def _remote(self, args=None, kwargs=None, **option_args):
-        if args is None:
-            args = []
-        if kwargs is None:
-            kwargs = {}
+    def _remote(self, args=[], kwargs={}, **option_args):
         return self.options(**option_args).remote(*args, **kwargs)
 
     def _prepare_client_task(self) -> ray_client_pb2.ClientTask:

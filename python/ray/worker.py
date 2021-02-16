@@ -1768,6 +1768,7 @@ def make_decorator(num_returns=None,
     return decorator
 
 
+@client_mode_hook
 def remote(*args, **kwargs):
     """Defines a remote function or an actor class.
 
