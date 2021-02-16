@@ -1372,13 +1372,7 @@ def timeline(address):
     type=str,
     default=ray_constants.REDIS_DEFAULT_PASSWORD,
     help="Connect to ray with redis_password.")
-@click.option(
-    "--stats-only",
-    is_flag=True,
-    type=bool,
-    default=False,
-    help="Connect to ray with redis_password.")
-def memory(address, redis_password, stats_only):
+def memory(address, redis_password):
     """Print object references held in a Ray cluster."""
     if not address:
         address = services.get_ray_address_to_use_or_die()
@@ -1387,8 +1381,7 @@ def memory(address, redis_password, stats_only):
     raylet = state.node_table()[0]
     print(
         ray.internal.internal_api.memory_summary(raylet["NodeManagerAddress"],
-                                                 raylet["NodeManagerPort"],
-                                                 stats_only))
+                                                 raylet["NodeManagerPort"]))
 
 
 @cli.command()
