@@ -1070,13 +1070,6 @@ sh_test(
 )
 
 py_test(
-    name = "env/wrappers/tests/test_unity3d_env",
-    tags = ["env"],
-    size = "small",
-    srcs = ["env/wrappers/tests/test_unity3d_env.py"]
-)
-
-py_test(
     name = "env/wrappers/tests/test_recsim_wrapper",
     tags = ["env"],
     size = "small",
