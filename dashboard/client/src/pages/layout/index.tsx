@@ -81,6 +81,16 @@ const BasicLayout = (
             button
             className={classnames(
               classes.menuItem,
+              location.pathname === "/summary" && classes.selected,
+            )}
+            onClick={() => history.push("/summary")}
+          >
+            <ListItemText>SUMMARY</ListItemText>
+          </ListItem>
+          <ListItem
+            button
+            className={classnames(
+              classes.menuItem,
               location.pathname.includes("node") && classes.selected,
             )}
             onClick={() => history.push("/node")}
@@ -122,7 +132,7 @@ const BasicLayout = (
             className={classnames(classes.menuItem)}
             onClick={() => history.push("/")}
           >
-            <ListItemText>BACK TO EXISTING DASHBOARD</ListItemText>
+            <ListItemText>BACK TO LEGACY</ListItemText>
           </ListItem>
           <ListItem>
             <IconButton

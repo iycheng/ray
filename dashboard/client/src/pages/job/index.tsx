@@ -98,7 +98,9 @@ const JobList = () => {
                     driverIpAddress,
                     isDead,
                     driverPid,
+                    state,
                     timestamp,
+                    namespaceId,
                   }) => (
                     <TableRow key={jobId}>
                       <TableCell align="center">
@@ -112,6 +114,7 @@ const JobList = () => {
                       <TableCell align="center">
                         {dayjs(timestamp * 1000).format("YYYY/MM/DD HH:mm:ss")}
                       </TableCell>
+                      <TableCell align="center">{namespaceId}</TableCell>
                     </TableRow>
                   ),
                 )}

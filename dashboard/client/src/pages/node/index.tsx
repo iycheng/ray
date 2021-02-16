@@ -14,6 +14,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Pagination from "@material-ui/lab/Pagination";
+import dayjs from "dayjs";
 import React from "react";
 import { Link } from "react-router-dom";
 import Loading from "../../components/Loading";
@@ -44,6 +45,8 @@ const columns = [
   "Disk(root)",
   "Sent",
   "Received",
+  "BRPC Port",
+  "Time Info",
   "Log",
 ];
 
@@ -69,7 +72,7 @@ export const NodeCard = (props: { node: NodeDetail }) => {
   }
 
   const { raylet, hostname, ip, cpu, mem, net, disk, logUrl } = node;
-  const { nodeId, state } = raylet;
+  const { nodeId, state, brpcPort } = raylet;
 
   return (
     <Paper variant="outlined" style={{ padding: "12px 12px", margin: 12 }}>
@@ -123,6 +126,15 @@ export const NodeCard = (props: { node: NodeDetail }) => {
         )}
       </Grid>
       <Grid container justify="flex-end" spacing={1} style={{ margin: 8 }}>
+        <Grid>
+          <Button
+            target="_blank"
+            rel="noopener noreferrer"
+            href={brpcLinkChanger(`${ip}:${raylet.brpcPort}`)}
+          >
+            BRPC {brpcPort}
+          </Button>
+        </Grid>
         <Grid>
           <Button>
             <Link to={`/log/${encodeURIComponent(logUrl)}`}>log</Link>
@@ -316,6 +328,35 @@ const Nodes = () => {
                         </TableCell>
                         <TableCell align="center">
                           {memoryConverter(net[1])}/s
+                        </TableCell>
+                        <TableCell align="center">
+                          {raylet.brpcPort && (
+                            <a
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              href={brpcLinkChanger(`${ip}:${raylet.brpcPort}`)}
+                            >
+                              {raylet.brpcPort}
+                            </a>
+                          )}
+                        </TableCell>
+                        <TableCell align="center">
+                          {!!raylet.startTime && (
+                            <p>
+                              Start Time:{" "}
+                              {dayjs(raylet.startTime * 1000).format(
+                                "YYYY/MM/DD HH:mm:ss",
+                              )}
+                            </p>
+                          )}
+                          {!!raylet.terminateTime && (
+                            <p>
+                              End Time:{" "}
+                              {dayjs(raylet.terminateTime * 1000).format(
+                                "YYYY/MM/DD HH:mm:ss",
+                              )}
+                            </p>
+                          )}
                         </TableCell>
                         <TableCell>
                           <Link to={`/log/${encodeURIComponent(logUrl)}`}>
