@@ -357,13 +357,9 @@ lint_web() {
   (
     cd "${WORKSPACE_DIR}"/python/ray/new_dashboard/client
     set +x # suppress set -x since it'll get very noisy here
-
-    if [ -z "${BUILDKITE-}" ]; then
-      . "${HOME}/.nvm/nvm.sh"
-      nvm use --silent node
-    fi
-
+    . "${HOME}/.nvm/nvm.sh"
     install_npm_project
+    nvm use --silent node
     local filenames
     # shellcheck disable=SC2207
     filenames=($(find src -name "*.ts" -or -name "*.tsx"))
