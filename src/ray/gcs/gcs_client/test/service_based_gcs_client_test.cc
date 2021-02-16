@@ -450,7 +450,7 @@ class ServiceBasedGcsClientTest : public ::testing::Test {
   bool AddLocation(const ObjectID &object_id, const NodeID &node_id) {
     std::promise<bool> promise;
     RAY_CHECK_OK(gcs_client_->Objects().AsyncAddLocation(
-        object_id, node_id, 0,
+        object_id, node_id,
         [&promise](Status status) { promise.set_value(status.ok()); }));
     return WaitReady(promise.get_future(), timeout_ms_);
   }

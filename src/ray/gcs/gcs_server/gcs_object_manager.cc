@@ -51,7 +51,6 @@ void GcsObjectManager::HandleGetAllObjectLocations(
       object_table_data.set_manager(node_id.Binary());
       object_location_info.add_locations()->CopyFrom(object_table_data);
     }
-    object_location_info.set_size(item.second.object_size);
     reply->add_object_location_info_list()->CopyFrom(object_location_info);
   }
   RAY_LOG(DEBUG) << "Finished getting all object locations.";
@@ -79,8 +78,7 @@ void GcsObjectManager::HandleAddObjectLocation(
     RAY_LOG(DEBUG) << "Adding object spilled location, object id = " << object_id;
   }
 
-  size_t size = request.size();
-  auto on_done = [this, object_id, node_id, spilled_url, size, reply,
+  auto on_done = [this, object_id, node_id, spilled_url, reply,
                   send_reply_callback](const Status &status) {
     if (status.ok()) {
       rpc::ObjectLocationChange notification;
@@ -91,7 +89,6 @@ void GcsObjectManager::HandleAddObjectLocation(
       if (!spilled_url.empty()) {
         notification.set_spilled_url(spilled_url);
       }
-      notification.set_size(size);
       RAY_CHECK_OK(gcs_pub_sub_->Publish(OBJECT_CHANNEL, object_id.Hex(),
                                          notification.SerializeAsString(), nullptr));
       RAY_LOG(DEBUG) << "Finished adding object location, job id = "
@@ -110,7 +107,6 @@ void GcsObjectManager::HandleAddObjectLocation(
   };
 
   absl::MutexLock lock(&mutex_);
-  object_to_locations_[object_id].object_size = size;
   const auto object_data = GenObjectLocationInfo(object_id);
   Status status = gcs_table_storage_->ObjectTable().Put(object_id, object_data, on_done);
   if (!status.ok()) {
@@ -291,7 +287,6 @@ const ObjectLocationInfo GcsObjectManager::GenObjectLocationInfo(
       object_data.add_locations()->set_manager(node_id.Binary());
     }
     object_data.set_spilled_url(it->second.spilled_url);
-    object_data.set_size(it->second.object_size);
   }
   return object_data;
 }
