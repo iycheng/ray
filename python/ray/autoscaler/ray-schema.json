@@ -337,12 +337,8 @@
                        "min_workers": {"type": "integer"},
                        "max_workers": {"type": "integer"},
                        "resources": {
-						   "patternProperties": {
-							   ".*":{
-								   "type": "integer",
-								   "minimum": 0
-							   }
-						   }
+                           "type": "object",
+                           ".*": {"type": "number"}
                        },
                        "initialization_commands": {
                            "$ref": "#/definitions/commands",
