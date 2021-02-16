@@ -46,9 +46,7 @@ class LogicalViewHead(dashboard_utils.DashboardHeadModule):
         except KeyError:
             return rest_response(success=False, message="Bad Request")
         try:
-            options = (("grpc.enable_http_proxy", 0), )
-            channel = aiogrpc.insecure_channel(
-                f"{ip_address}:{port}", options=options)
+            channel = aiogrpc.insecure_channel(f"{ip_address}:{port}")
             stub = core_worker_pb2_grpc.CoreWorkerServiceStub(channel)
 
             await stub.KillActor(
