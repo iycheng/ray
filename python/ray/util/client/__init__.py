@@ -1,6 +1,5 @@
 from typing import List, Tuple, Dict, Any
 
-import sys
 import logging
 
 logger = logging.getLogger(__name__)
@@ -26,9 +25,7 @@ class RayAPIStub:
                 conn_str: str,
                 secure: bool = False,
                 metadata: List[Tuple[str, str]] = None,
-                connection_retries: int = 3,
-                *,
-                ignore_version: bool = False) -> Dict[str, Any]:
+                connection_retries: int = 3) -> Dict[str, Any]:
         """Connect the Ray Client to a server.
 
         Args:
@@ -59,24 +56,10 @@ class RayAPIStub:
                 metadata=metadata,
                 connection_retries=connection_retries)
             self.api.worker = self.client_worker
-            conn_info = self.client_worker.connection_info()
-            self._check_versions(conn_info, ignore_version)
-            return conn_info
+            return self.client_worker.connection_info()
         except Exception:
             self.disconnect()
             raise
-
-    def _check_versions(self, conn_info, ignore_version: bool) -> None:
-        local_major_minor = f"{sys.version_info[0]}.{sys.version_info[1]}"
-        if not conn_info["python_version"].startswith(local_major_minor):
-            version_str = f"{local_major_minor}.{sys.version_info[2]}"
-            msg = "Python minor versions differ between client and server:" + \
-                  f" client is {version_str}," + \
-                  f" server is {conn_info['python_version']}"
-            if ignore_version:
-                logger.warning(msg)
-            else:
-                raise RuntimeError(msg)
 
     def disconnect(self):
         """Disconnect the Ray Client.
@@ -114,9 +97,8 @@ class RayAPIStub:
         if self._server is not None:
             raise Exception("Trying to start two instances of ray via client")
         import ray.util.client.server.server as ray_client_server
-        server_handle, address_info = ray_client_server.init_and_serve(
+        self._server, address_info = ray_client_server.init_and_serve(
             "localhost:50051", *args, **kwargs)
-        self._server = server_handle.grpc_server
         self.connect("localhost:50051")
         self._connected_with_init = True
         return address_info
