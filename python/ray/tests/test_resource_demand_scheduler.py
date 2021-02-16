@@ -8,7 +8,6 @@ import unittest
 import copy
 
 import ray
-import ray.ray_constants
 from ray.autoscaler._private.util import \
     rewrite_legacy_yaml_to_available_node_types, format_info_string, \
     format_info_string_no_node_types
@@ -1216,27 +1215,15 @@ class LoadMetricsTest(unittest.TestCase):
                 strategy=PlacementStrategy.PACK,
                 bundles=([Bundle(unit_resources={"GPU": 2})] * 2)),
         ]
-        lm.update(
-            "1.1.1.1",
-            {
-                "CPU": 64,
-                "memory": 20,  # 1000 MiB
-                "object_store_memory": 40  # 2000 MiB
-            },
-            {
-                "CPU": 2,
-                "memory": 10,  # 500 MiB
-                "object_store_memory": 20  # 1000 MiB
-            },
-            {})
+        lm.update("1.1.1.1", {"CPU": 64}, {"CPU": 2}, {})
         lm.update("1.1.1.2", {
             "CPU": 64,
             "GPU": 8,
-            "accelerator_type:V100": 1,
+            "accelerator_type:V100": 1
         }, {
             "CPU": 0,
             "GPU": 1,
-            "accelerator_type:V100": 1,
+            "accelerator_type:V100": 1
         }, {})
         lm.update("1.1.1.3", {
             "CPU": 64,
@@ -1270,9 +1257,6 @@ class LoadMetricsTest(unittest.TestCase):
 
         assert summary.usage["CPU"] == (190, 194)
         assert summary.usage["GPU"] == (15, 16)
-        assert summary.usage["memory"] == (500 * 2**20, 1000 * 2**20)
-        assert summary.usage["object_store_memory"] == \
-            (1000 * 2**20, 2000 * 2**20)
         assert summary.usage["accelerator_type:V100"][1] == 2, \
             "Not comparing the usage value due to floating point error."
 
@@ -1296,7 +1280,7 @@ class LoadMetricsTest(unittest.TestCase):
         # TODO (Alex): This set of nodes won't be very useful in practice
         # because the node:xxx.xxx.xxx.xxx resources means that no 2 nodes
         # should ever have the same set of resources.
-        assert len(summary.node_types) == 3, summary.node_types
+        assert len(summary.node_types) == 3
 
 
 class AutoscalingTest(unittest.TestCase):
@@ -2429,8 +2413,8 @@ def test_info_string():
             "CPU": (530, 544),
             "GPU": (2, 2),
             "AcceleratorType:V100": (0, 2),
-            "memory": (2 * 2**30, 2**33),
-            "object_store_memory": (3.14 * 2**30, 2**34)
+            "memory": (0, 1583.19),
+            "object_store_memory": (0, 471.02)
         },
         resource_demand=[({
             "CPU": 1
@@ -2473,11 +2457,11 @@ Resources
 --------------------------------------------------------
 
 Usage:
- 0/2 AcceleratorType:V100
  530/544 CPU
  2/2 GPU
- 2.00/8.000 GiB memory
- 3.14/16.000 GiB object_store_memory
+ 0/2 AcceleratorType:V100
+ 0.00/77.304 GiB memory
+ 0.00/22.999 GiB object_store_memory
 
 Demands:
  {'CPU': 1}: 150+ pending tasks/actors
@@ -2500,8 +2484,8 @@ def test_info_string_no_node_type():
             "CPU": (530, 544),
             "GPU": (2, 2),
             "AcceleratorType:V100": (0, 2),
-            "memory": (2 * 2**30, 2**33),
-            "object_store_memory": (3.14 * 2**30, 2**34)
+            "memory": (0, 1583.19),
+            "object_store_memory": (0, 471.02)
         },
         resource_demand=[({
             "CPU": 1
@@ -2528,11 +2512,11 @@ Node status
 Resources
 -----------------------------------------------------
 Usage:
- 0/2 AcceleratorType:V100
  530/544 CPU
  2/2 GPU
- 2.00/8.000 GiB memory
- 3.14/16.000 GiB object_store_memory
+ 0/2 AcceleratorType:V100
+ 0.00/77.304 GiB memory
+ 0.00/22.999 GiB object_store_memory
 
 Demands:
  {'CPU': 1}: 150+ pending tasks/actors
