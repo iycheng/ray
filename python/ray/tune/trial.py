@@ -1,7 +1,6 @@
 from typing import Callable, Dict, Sequence, Union
 import json
 
-import ray
 import ray.cloudpickle as cloudpickle
 from collections import deque
 import copy
@@ -641,9 +640,4 @@ class Trial:
 
         self.__dict__.update(state)
         validate_trainable(self.trainable_name)
-
-        # Avoid creating logdir in client mode for returned trial results,
-        # since the dir might not be creatable locally. TODO(ekl) thsi is kind
-        # of a hack.
-        if not ray.util.client.ray.is_connected():
-            self.init_logdir()  # Create logdir if it does not exist
+        self.init_logdir()  # Create logdir if it does not exist
