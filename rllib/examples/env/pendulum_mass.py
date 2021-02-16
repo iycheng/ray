@@ -11,22 +11,19 @@ class PendulumMassEnv(PendulumEnv, gym.utils.EzPickle, MetaEnv):
     """
 
     def sample_tasks(self, n_tasks):
-        # Sample new pendulum masses (random floats between 0.5 and 2).
+        # Mass is a random float between 0.5 and 2
         return np.random.uniform(low=0.5, high=2.0, size=(n_tasks, ))
 
     def set_task(self, task):
         """
         Args:
-            task (float): Task of the meta-learning environment (here: mass of
-                the pendulum).
+            task: task of the meta-learning environment
         """
-        # self.m is the mass property of the pendulum.
         self.m = task
 
     def get_task(self):
         """
         Returns:
-            float: The current mass of the pendulum (self.m in the PendulumEnv
-                object).
+            task: task of the meta-learning environment
         """
         return self.m
