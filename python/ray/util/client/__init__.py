@@ -89,9 +89,7 @@ class RayAPIStub:
         return getattr(self.api, key)
 
     def is_connected(self) -> bool:
-        if self.client_worker is None:
-            return False
-        return self.client_worker.is_connected()
+        return self.client_worker is not None
 
     def init(self, *args, **kwargs):
         if self._server is not None:
