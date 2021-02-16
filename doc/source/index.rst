@@ -305,7 +305,6 @@ Papers
    joblib.rst
    iter.rst
    xgboost-ray.rst
-   modin/index.rst
    dask-on-ray.rst
    mars-on-ray.rst
    ray-client.rst
