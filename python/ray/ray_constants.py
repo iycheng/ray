@@ -150,9 +150,12 @@ LOGGER_LEVEL = "info"
 LOGGER_LEVEL_CHOICES = ["debug", "info", "warning", "error", "critical"]
 LOGGER_LEVEL_HELP = ("The logging level threshold, choices=['debug', 'info',"
                      " 'warning', 'error', 'critical'], default='info'")
-
-LOGGING_ROTATE_BYTES = 512 * 1024 * 1024  # 512MB.
-LOGGING_ROTATE_BACKUP_COUNT = 5  # 5 Backup files at max.
+# Default param for RotatingFileHandler
+# maxBytes. 10G by default. We intentionally set the default value high
+# so that users who won't care don't know about the existence of this.
+LOGGING_ROTATE_BYTES = 10 * 1000 * 1000 * 1000
+# The default will grow logs up until 500GB without log loss.
+LOGGING_ROTATE_BACKUP_COUNT = 50  # backupCount
 
 # Constants used to define the different process types.
 PROCESS_TYPE_REAPER = "reaper"
@@ -169,8 +172,6 @@ PROCESS_TYPE_PLASMA_STORE = "plasma_store"
 PROCESS_TYPE_REDIS_SERVER = "redis_server"
 PROCESS_TYPE_WEB_UI = "web_ui"
 PROCESS_TYPE_GCS_SERVER = "gcs_server"
-PROCESS_TYPE_PYTHON_CORE_WORKER_DRIVER = "python-core-driver"
-PROCESS_TYPE_PYTHON_CORE_WORKER = "python-core-worker"
 
 # Log file names
 MONITOR_LOG_FILE_NAME = f"{PROCESS_TYPE_MONITOR}.log"
