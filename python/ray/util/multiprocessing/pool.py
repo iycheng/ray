@@ -9,7 +9,6 @@ import queue
 import copy
 
 import ray
-from ray.util import log_once
 
 logger = logging.getLogger(__name__)
 
@@ -337,7 +336,7 @@ class Pool:
         self._maxtasksperchild = maxtasksperchild or -1
         self._actor_deletion_ids = []
 
-        if context and log_once("context_argument_warning"):
+        if context:
             logger.warning("The 'context' argument is not supported using "
                            "ray. Please refer to the documentation for how "
                            "to control ray initialization.")
