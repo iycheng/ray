@@ -8,7 +8,6 @@
 aiohttp==3.7
 aioredis
 click >= 7.0
-cloudpickle
 colorama
 colorful
 filelock
