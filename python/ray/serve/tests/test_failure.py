@@ -1,11 +1,13 @@
 import os
 import requests
 import sys
+import tempfile
 import time
 
 import pytest
 import ray
 from ray.test_utils import wait_for_condition
+from ray import serve
 from ray.serve.config import BackendConfig, ReplicaConfig
 
 
@@ -158,30 +160,34 @@ def test_worker_restart(serve_instance):
 def test_worker_replica_failure(serve_instance):
     client = serve_instance
 
-    @ray.remote
-    class Counter:
-        def __init__(self):
-            self.count = 0
-
-        def inc_and_get(self):
-            self.count += 1
-            return self.count
-
     class Worker:
         # Assumes that two replicas are started. Will hang forever in the
         # constructor for any workers that are restarted.
-        def __init__(self, counter):
+        def __init__(self, path):
             self.should_hang = False
-            self.index = ray.get(counter.inc_and_get.remote())
-            if self.index > 2:
+            if not os.path.exists(path):
+                with open(path, "w") as f:
+                    f.write("1")
+            else:
+                with open(path, "r") as f:
+                    num = int(f.read())
+
+                with open(path, "w") as f:
+                    if num == 2:
+                        self.should_hang = True
+                    else:
+                        f.write(str(num + 1))
+
+            if self.should_hang:
                 while True:
                     pass
 
         def __call__(self, *args):
-            return self.index
+            pass
 
-    counter = Counter.remote()
-    client.create_backend("replica_failure", Worker, counter)
+    temp_path = os.path.join(tempfile.gettempdir(),
+                             serve.utils.get_random_letters())
+    client.create_backend("replica_failure", Worker, temp_path)
     client.update_backend_config(
         "replica_failure", BackendConfig(num_replicas=2))
     client.create_endpoint(
@@ -189,16 +195,9 @@ def test_worker_replica_failure(serve_instance):
 
     # Wait until both replicas have been started.
     responses = set()
-    start = time.time()
-    while time.time() - start < 30:
+    while len(responses) == 1:
+        responses.add(request_with_retries("/replica_failure", timeout=1).text)
         time.sleep(0.1)
-        response = request_with_retries("/replica_failure", timeout=1).text
-        assert response in ["1", "2"]
-        responses.add(response)
-        if len(responses) > 1:
-            break
-    else:
-        raise TimeoutError("Timed out waiting for replicas after 30s.")
 
     # Kill one of the replicas.
     handles = _get_worker_handles(client, "replica_failure")
@@ -264,4 +263,6 @@ def test_create_endpoint_idempotent(serve_instance):
 
 
 if __name__ == "__main__":
+    import sys
+    import pytest
     sys.exit(pytest.main(["-v", "-s", __file__]))
