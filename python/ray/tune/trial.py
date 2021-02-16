@@ -166,13 +166,6 @@ class Trial:
 
     """
 
-    _nonjson_fields = [
-        "results",
-        "best_result",
-        "param_config",
-        "extra_arg",
-    ]
-
     PENDING = "PENDING"
     RUNNING = "RUNNING"
     PAUSED = "PAUSED"
@@ -296,6 +289,12 @@ class Trial:
         self.param_config = None
         self.extra_arg = None
 
+        self._nonjson_fields = [
+            "results",
+            "best_result",
+            "param_config",
+            "extra_arg",
+        ]
         if trial_name_creator:
             self.custom_trial_name = trial_name_creator(self)
 
