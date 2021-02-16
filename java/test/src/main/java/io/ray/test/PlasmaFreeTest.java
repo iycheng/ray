@@ -25,7 +25,7 @@ public class PlasmaFreeTest extends BaseTest {
             () ->
                 !TestUtils.getRuntime()
                     .getObjectStore()
-                    .wait(ImmutableList.of(((ObjectRefImpl<String>) helloId).getId()), 1, 0, true)
+                    .wait(ImmutableList.of(((ObjectRefImpl<String>) helloId).getId()), 1, 0)
                     .get(0),
             50);
     if (TestUtils.isSingleProcessMode()) {

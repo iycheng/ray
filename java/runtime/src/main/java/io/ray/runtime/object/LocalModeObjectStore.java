@@ -60,8 +60,7 @@ public class LocalModeObjectStore extends ObjectStore {
   }
 
   @Override
-  public List<Boolean> wait(
-      List<ObjectId> objectIds, int numObjects, long timeoutMs, boolean fetchLocal) {
+  public List<Boolean> wait(List<ObjectId> objectIds, int numObjects, long timeoutMs) {
     waitInternal(objectIds, numObjects, timeoutMs);
     return objectIds.stream().map(pool::containsKey).collect(Collectors.toList());
   }

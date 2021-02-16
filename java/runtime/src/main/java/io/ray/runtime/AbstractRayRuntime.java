@@ -105,9 +105,8 @@ public abstract class AbstractRayRuntime implements RayRuntimeInternal {
   }
 
   @Override
-  public <T> WaitResult<T> wait(
-      List<ObjectRef<T>> waitList, int numReturns, int timeoutMs, boolean fetchLocal) {
-    return objectStore.wait(waitList, numReturns, timeoutMs, fetchLocal);
+  public <T> WaitResult<T> wait(List<ObjectRef<T>> waitList, int numReturns, int timeoutMs) {
+    return objectStore.wait(waitList, numReturns, timeoutMs);
   }
 
   @Override

@@ -88,24 +88,6 @@ public final class Ray extends RayCall {
   }
 
   /**
-   * Wait for a list of RayObjects to be available, until specified number of objects are ready, or
-   * specified timeout has passed.
-   *
-   * @param waitList A list of object references to wait for.
-   * @param numReturns The number of objects that should be returned.
-   * @param timeoutMs The maximum time in milliseconds to wait before returning.
-   * @param fetchLocal If true, wait for the object to be downloaded onto the local node before
-   *     returning it as ready. If false, ray.wait() will not trigger fetching of objects to the
-   *     local node and will return immediately once the object is available anywhere in the
-   *     cluster.
-   * @return Two lists, one containing locally available objects, one containing the rest.
-   */
-  public static <T> WaitResult<T> wait(
-      List<ObjectRef<T>> waitList, int numReturns, int timeoutMs, boolean fetchLocal) {
-    return internal().wait(waitList, numReturns, timeoutMs, fetchLocal);
-  }
-
-  /**
    * Wait for a list of RayObjects to be locally available, until specified number of objects are
    * ready, or specified timeout has passed.
    *
@@ -115,29 +97,30 @@ public final class Ray extends RayCall {
    * @return Two lists, one containing locally available objects, one containing the rest.
    */
   public static <T> WaitResult<T> wait(List<ObjectRef<T>> waitList, int numReturns, int timeoutMs) {
-    return wait(waitList, numReturns, timeoutMs, true);
+    return internal().wait(waitList, numReturns, timeoutMs);
   }
 
   /**
-   * Wait for a list of RayObjects to be locally available, until specified number of objects are
-   * ready.
+   * A convenient helper method for Ray.wait. It will wait infinitely until specified number of
+   * objects are locally available.
    *
    * @param waitList A list of object references to wait for.
    * @param numReturns The number of objects that should be returned.
    * @return Two lists, one containing locally available objects, one containing the rest.
    */
   public static <T> WaitResult<T> wait(List<ObjectRef<T>> waitList, int numReturns) {
-    return wait(waitList, numReturns, Integer.MAX_VALUE);
+    return internal().wait(waitList, numReturns, Integer.MAX_VALUE);
   }
 
   /**
-   * Wait for a list of RayObjects to be locally available.
+   * A convenient helper method for Ray.wait. It will wait infinitely until all objects are locally
+   * available.
    *
    * @param waitList A list of object references to wait for.
    * @return Two lists, one containing locally available objects, one containing the rest.
    */
   public static <T> WaitResult<T> wait(List<ObjectRef<T>> waitList) {
-    return wait(waitList, waitList.size());
+    return internal().wait(waitList, waitList.size(), Integer.MAX_VALUE);
   }
 
   /**
