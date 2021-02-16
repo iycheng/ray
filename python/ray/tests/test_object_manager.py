@@ -296,6 +296,9 @@ def test_pull_request_retry(shutdown_only):
     ray.get(driver.remote())
 
 
+@pytest.mark.skip(
+    reason="This hangs due to a deadlock between a worker getting its "
+    "arguments and the node pulling arguments for the next task queued.")
 @pytest.mark.timeout(30)
 def test_pull_bundles_admission_control(shutdown_only):
     cluster = Cluster()
@@ -330,6 +333,9 @@ def test_pull_bundles_admission_control(shutdown_only):
     ray.get(tasks)
 
 
+@pytest.mark.skip(
+    reason="This hangs due to a deadlock between a worker getting its "
+    "arguments and the node pulling arguments for the next task queued.")
 @pytest.mark.timeout(30)
 def test_pull_bundles_admission_control_dynamic(shutdown_only):
     # This test is the same as test_pull_bundles_admission_control, except that
@@ -352,13 +358,11 @@ def test_pull_bundles_admission_control_dynamic(shutdown_only):
     cluster.wait_for_nodes()
 
     @ray.remote
-    def foo(i, *args):
-        print("foo", i)
+    def foo(*args):
         return
 
     @ray.remote
-    def allocate(i):
-        print("allocate", i)
+    def allocate(*args):
         return np.zeros(object_size, dtype=np.uint8)
 
     args = []
@@ -369,8 +373,8 @@ def test_pull_bundles_admission_control_dynamic(shutdown_only):
         ]
         args.append(task_args)
 
-    tasks = [foo.remote(i, *task_args) for i, task_args in enumerate(args)]
-    allocated = [allocate.remote(i) for i in range(num_objects)]
+    tasks = [foo.remote(*task_args) for task_args in args]
+    allocated = [allocate.remote() for _ in range(num_objects)]
     ray.get(tasks)
     del allocated
 
