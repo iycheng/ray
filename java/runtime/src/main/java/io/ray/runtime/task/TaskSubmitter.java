@@ -21,8 +21,7 @@ public interface TaskSubmitter {
    * @param functionDescriptor The remote function to execute.
    * @param args Arguments of this task.
    * @param numReturns Return object count.
-   * @param options Options for this task.
-   * @return Ids of the return objects.
+   * @param options Options for this task. Returns Ids of the return objects.
    */
   List<ObjectId> submitTask(
       FunctionDescriptor functionDescriptor,
@@ -35,8 +34,7 @@ public interface TaskSubmitter {
    *
    * @param functionDescriptor The remote function that generates the actor object.
    * @param args Arguments of this task.
-   * @param options Options for this actor creation task.
-   * @return Handle to the actor.
+   * @param options Options for this actor creation task. Returns Handle to the actor.
    * @throws IllegalArgumentException if actor of specified name exists
    */
   BaseActorHandle createActor(
@@ -50,8 +48,7 @@ public interface TaskSubmitter {
    * @param functionDescriptor The remote function to execute.
    * @param args Arguments of this task.
    * @param numReturns Return object count.
-   * @param options Options for this task.
-   * @return Ids of the return objects.
+   * @param options Options for this task. Returns Ids of the return objects.
    */
   List<ObjectId> submitActorTask(
       BaseActorHandle actor,
@@ -65,8 +62,7 @@ public interface TaskSubmitter {
    *
    * @param name Name of the placement group.
    * @param bundles Pre-allocated resource list.
-   * @param strategy Actor placement strategy.
-   * @return A handle to the created placement group.
+   * @param strategy Actor placement strategy. Returns A handle to the created placement group.
    */
   PlacementGroup createPlacementGroup(
       String name, List<Map<String, Double>> bundles, PlacementStrategy strategy);
@@ -82,8 +78,8 @@ public interface TaskSubmitter {
    * Wait for the placement group to be ready within the specified time.
    *
    * @param id Id of placement group.
-   * @param timeoutMs Timeout in milliseconds.
-   * @return True if the placement group is created. False otherwise.
+   * @param timeoutMs Timeout in milliseconds. Returns True if the placement group is created. False
+   *     otherwise.
    */
   boolean waitPlacementGroupReady(PlacementGroupId id, int timeoutMs);
 

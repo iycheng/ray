@@ -54,7 +54,7 @@ public abstract class Metric {
   /**
    * Get the value to record and then reset.
    *
-   * @return latest updating value.
+   * <p>Returns latest updating value.
    */
   protected abstract double getAndReset();
 

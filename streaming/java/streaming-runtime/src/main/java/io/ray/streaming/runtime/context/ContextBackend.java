@@ -12,15 +12,14 @@ public interface ContextBackend {
   /**
    * check if key exists in state
    *
-   * @return true if exists
+   * <p>Returns true if exists
    */
   boolean exists(final String key) throws Exception;
 
   /**
    * get content by key
    *
-   * @param key key
-   * @return the StateBackend
+   * @param key key Returns the StateBackend
    */
   byte[] get(final String key) throws Exception;
 

@@ -35,8 +35,7 @@ public class GcsClient {
   /**
    * Get placement group by {@link PlacementGroupId}.
    *
-   * @param placementGroupId Id of placement group.
-   * @return The placement group.
+   * @param placementGroupId Id of placement group. Returns The placement group.
    */
   public PlacementGroup getPlacementGroupInfo(PlacementGroupId placementGroupId) {
     byte[] result = globalStateAccessor.getPlacementGroupInfo(placementGroupId);
@@ -46,7 +45,7 @@ public class GcsClient {
   /**
    * Get all placement groups in this cluster.
    *
-   * @return All placement groups.
+   * <p>Returns All placement groups.
    */
   public List<PlacementGroup> getAllPlacementGroupInfo() {
     List<byte[]> results = globalStateAccessor.getAllPlacementGroupInfo();

@@ -36,7 +36,7 @@ public class EnvUtil {
   /**
    * Execute an external command.
    *
-   * @return Whether the command succeeded.
+   * <p>Returns Whether the command succeeded.
    */
   public static boolean executeCommand(List<String> command, int waitTimeoutSeconds) {
     try {
