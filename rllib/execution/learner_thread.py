@@ -1,7 +1,8 @@
-import copy
-from six.moves import queue
-import threading
 from typing import Dict
+import threading
+import copy
+
+from six.moves import queue
 
 from ray.rllib.evaluation.metrics import get_learner_stats
 from ray.rllib.execution.minibatch_buffer import MinibatchBuffer
@@ -68,10 +69,7 @@ class LearnerThread(threading.Thread):
 
     def step(self) -> None:
         with self.queue_timer:
-            try:
-                batch, _ = self.minibatch_buffer.get()
-            except queue.Empty:
-                return
+            batch, _ = self.minibatch_buffer.get()
 
         with self.grad_timer:
             fetches = self.local_worker.learn_on_batch(batch)

@@ -3,127 +3,126 @@
 import traceback
 
 from ray.rllib.contrib.registry import CONTRIBUTED_ALGORITHMS
-from ray.rllib.utils.deprecation import deprecation_warning
 
 
 def _import_a2c():
     from ray.rllib.agents import a3c
-    return a3c.A2CTrainer, a3c.a2c.A2C_DEFAULT_CONFIG
+    return a3c.A2CTrainer
 
 
 def _import_a3c():
     from ray.rllib.agents import a3c
-    return a3c.A3CTrainer, a3c.DEFAULT_CONFIG
+    return a3c.A3CTrainer
 
 
 def _import_apex():
     from ray.rllib.agents import dqn
-    return dqn.ApexTrainer, dqn.apex.APEX_DEFAULT_CONFIG
+    return dqn.ApexTrainer
 
 
 def _import_apex_ddpg():
     from ray.rllib.agents import ddpg
-    return ddpg.ApexDDPGTrainer, ddpg.apex.APEX_DDPG_DEFAULT_CONFIG
+    return ddpg.ApexDDPGTrainer
 
 
 def _import_appo():
     from ray.rllib.agents import ppo
-    return ppo.APPOTrainer, ppo.appo.DEFAULT_CONFIG
+    return ppo.APPOTrainer
 
 
 def _import_ars():
     from ray.rllib.agents import ars
-    return ars.ARSTrainer, ars.DEFAULT_CONFIG
+    return ars.ARSTrainer
 
 
 def _import_bc():
     from ray.rllib.agents import marwil
-    return marwil.BCTrainer, marwil.DEFAULT_CONFIG
+    return marwil.BCTrainer
 
 
 def _import_cql():
     from ray.rllib.agents import cql
-    return cql.CQLTrainer, cql.CQL_DEFAULT_CONFIG
+    return cql.CQLTrainer
 
 
 def _import_ddpg():
     from ray.rllib.agents import ddpg
-    return ddpg.DDPGTrainer, ddpg.DEFAULT_CONFIG
+    return ddpg.DDPGTrainer
 
 
 def _import_ddppo():
     from ray.rllib.agents import ppo
-    return ppo.DDPPOTrainer, ppo.DEFAULT_CONFIG
+    return ppo.DDPPOTrainer
 
 
 def _import_dqn():
     from ray.rllib.agents import dqn
-    return dqn.DQNTrainer, dqn.DEFAULT_CONFIG
+    return dqn.DQNTrainer
 
 
 def _import_dreamer():
     from ray.rllib.agents import dreamer
-    return dreamer.DREAMERTrainer, dreamer.DEFAULT_CONFIG
+    return dreamer.DREAMERTrainer
 
 
 def _import_es():
     from ray.rllib.agents import es
-    return es.ESTrainer, es.DEFAULT_CONFIG
+    return es.ESTrainer
 
 
 def _import_impala():
     from ray.rllib.agents import impala
-    return impala.ImpalaTrainer, impala.DEFAULT_CONFIG
+    return impala.ImpalaTrainer
 
 
 def _import_maml():
     from ray.rllib.agents import maml
-    return maml.MAMLTrainer, maml.DEFAULT_CONFIG
+    return maml.MAMLTrainer
 
 
 def _import_marwil():
     from ray.rllib.agents import marwil
-    return marwil.MARWILTrainer, marwil.DEFAULT_CONFIG
+    return marwil.MARWILTrainer
 
 
 def _import_mbmpo():
     from ray.rllib.agents import mbmpo
-    return mbmpo.MBMPOTrainer, mbmpo.DEFAULT_CONFIG
+    return mbmpo.MBMPOTrainer
 
 
 def _import_pg():
     from ray.rllib.agents import pg
-    return pg.PGTrainer, pg.DEFAULT_CONFIG
+    return pg.PGTrainer
 
 
 def _import_ppo():
     from ray.rllib.agents import ppo
-    return ppo.PPOTrainer, ppo.DEFAULT_CONFIG
+    return ppo.PPOTrainer
 
 
 def _import_qmix():
     from ray.rllib.agents import qmix
-    return qmix.QMixTrainer, qmix.DEFAULT_CONFIG
+    return qmix.QMixTrainer
 
 
 def _import_sac():
     from ray.rllib.agents import sac
-    return sac.SACTrainer, sac.DEFAULT_CONFIG
+    return sac.SACTrainer
 
 
 def _import_simple_q():
     from ray.rllib.agents import dqn
-    return dqn.SimpleQTrainer, dqn.simple_q.DEFAULT_CONFIG
+    return dqn.SimpleQTrainer
 
 
 def _import_slate_q():
     from ray.rllib.agents import slateq
-    return slateq.SlateQTrainer, slateq.DEFAULT_CONFIG
+    return slateq.SlateQTrainer
 
 
 def _import_td3():
     from ray.rllib.agents import ddpg
-    return ddpg.TD3Trainer, ddpg.td3.TD3_DEFAULT_CONFIG
+    return ddpg.TD3Trainer
 
 
 ALGORITHMS = {
@@ -154,47 +153,32 @@ ALGORITHMS = {
 }
 
 
-def get_trainer_class(alg: str, return_config=False) -> type:
-    """Returns the class of a known Trainer given its name."""
+def get_agent_class(alg: str) -> type:
+    """Returns the class of a known agent given its name."""
 
     try:
-        return _get_trainer_class(alg, return_config=return_config)
+        return _get_agent_class(alg)
     except ImportError:
-        from ray.rllib.agents.mock import _trainer_import_failed
-        class_ = _trainer_import_failed(traceback.format_exc())
-        config = class_._default_config
-        if return_config:
-            return class_, config
-        return class_
+        from ray.rllib.agents.mock import _agent_import_failed
+        return _agent_import_failed(traceback.format_exc())
 
 
-# Deprecated: Use `get_trainer_class` instead.
-def get_agent_class(alg: str) -> type:
-    deprecation_warning("get_agent_class", "get_trainer_class", error=False)
-    return get_trainer_class(alg)
-
-
-def _get_trainer_class(alg: str, return_config=False) -> type:
+def _get_agent_class(alg: str) -> type:
     if alg in ALGORITHMS:
-        class_, config = ALGORITHMS[alg]()
+        return ALGORITHMS[alg]()
     elif alg in CONTRIBUTED_ALGORITHMS:
-        class_, config = CONTRIBUTED_ALGORITHMS[alg]()
+        return CONTRIBUTED_ALGORITHMS[alg]()
     elif alg == "script":
         from ray.tune import script_runner
-        class_, config = script_runner.ScriptRunner, {}
+        return script_runner.ScriptRunner
     elif alg == "__fake":
         from ray.rllib.agents.mock import _MockTrainer
-        class_, config = _MockTrainer, _MockTrainer._default_config
+        return _MockTrainer
     elif alg == "__sigmoid_fake_data":
         from ray.rllib.agents.mock import _SigmoidFakeData
-        class_, config = _SigmoidFakeData, _SigmoidFakeData._default_config
+        return _SigmoidFakeData
     elif alg == "__parameter_tuning":
         from ray.rllib.agents.mock import _ParameterTuningTrainer
-        class_, config = _ParameterTuningTrainer, \
-            _ParameterTuningTrainer._default_config
+        return _ParameterTuningTrainer
     else:
         raise Exception(("Unknown algorithm {}.").format(alg))
-
-    if return_config:
-        return class_, config
-    return class_
