@@ -98,7 +98,7 @@ class OptunaSearch(Searcher):
             param.suggest_uniform("b", 10, 20)
         ]
 
-        optuna_search = OptunaSearch(
+        algo = OptunaSearch(
             space,
             metric="loss",
             mode="min")
