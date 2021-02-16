@@ -29,14 +29,7 @@ class MockParam(object):
 
 class PopulationBasedTrainingMemoryTest(unittest.TestCase):
     def setUp(self):
-        ray.init(
-            num_cpus=1,
-            object_store_memory=100 * MB,
-            _system_config={
-                # This test uses ray.objects(), which only works with the
-                # GCS-based object directory
-                "ownership_based_object_directory_enabled": False,
-            })
+        ray.init(num_cpus=1, object_store_memory=100 * MB)
 
     def tearDown(self):
         ray.shutdown()
@@ -97,13 +90,7 @@ class PopulationBasedTrainingMemoryTest(unittest.TestCase):
 
 class PopulationBasedTrainingFileDescriptorTest(unittest.TestCase):
     def setUp(self):
-        ray.init(
-            num_cpus=2,
-            _system_config={
-                # This test uses ray.objects(), which only works with the
-                # GCS-based object directory
-                "ownership_based_object_directory_enabled": False,
-            })
+        ray.init(num_cpus=2)
         os.environ["TUNE_GLOBAL_CHECKPOINT_S"] = "0"
 
     def tearDown(self):
