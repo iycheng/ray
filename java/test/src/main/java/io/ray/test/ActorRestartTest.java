@@ -3,14 +3,15 @@ package io.ray.test;
 import io.ray.api.ActorHandle;
 import io.ray.api.Ray;
 import io.ray.runtime.exception.RayActorException;
-import io.ray.runtime.exception.RayException;
 import io.ray.runtime.util.SystemUtil;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-@Test(groups = {"cluster"})
+@Test(
+    groups = {"cluster"},
+    enabled = false)
 public class ActorRestartTest extends BaseTest {
 
   public static class Counter {
@@ -57,7 +58,6 @@ public class ActorRestartTest extends BaseTest {
     // Kill the actor process.
     killActorProcess(actor);
 
-    waitForActorAlive(actor);
     int value = actor.task(Counter::increase).remote().get();
     Assert.assertEquals(value, 1);
 
@@ -82,19 +82,5 @@ public class ActorRestartTest extends BaseTest {
     Process p = Runtime.getRuntime().exec("kill -9 " + pid);
     // Wait for the actor to be killed.
     TimeUnit.SECONDS.sleep(1);
-  }
-
-  private static void waitForActorAlive(ActorHandle<Counter> actor) {
-    Assert.assertTrue(
-        TestUtils.waitForCondition(
-            () -> {
-              try {
-                actor.task(Counter::getPid).remote().get();
-                return true;
-              } catch (RayException e) {
-                return false;
-              }
-            },
-            10000));
   }
 }
