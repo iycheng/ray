@@ -66,7 +66,7 @@ class TestSupportedMultiAgentPG(unittest.TestCase):
 class TestSupportedMultiAgentOffPolicy(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        ray.init(num_cpus=6)
+        ray.init(num_cpus=4)
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -82,9 +82,6 @@ class TestSupportedMultiAgentOffPolicy(unittest.TestCase):
                 "min_iter_time_s": 1,
                 "learning_starts": 10,
                 "target_network_update_freq": 100,
-                "optimizer": {
-                    "num_replay_buffer_shards": 1,
-                },
             })
 
     def test_apex_ddpg_multiagent(self):

@@ -17,6 +17,7 @@ from ray.rllib.utils.typing import MultiAgentDict, EnvInfoDict, EnvObsType, \
     EnvActionType
 
 logger = logging.getLogger(__name__)
+logger.setLevel("INFO")  # TODO(ekl) seems to be needed for cartpole_client.py
 
 try:
     import requests  # `requests` is not part of stdlib.
