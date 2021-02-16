@@ -59,9 +59,3 @@ def test_actor_api(ray_start_regular):
     x = 1
     f = Foo.remote(x)
     assert (ray.get(f.get.remote()) == x)
-
-
-if __name__ == "__main__":
-    import pytest
-    import sys
-    sys.exit(pytest.main(["-v", __file__]))

@@ -1,7 +1,5 @@
-import pytest
 from ray.util.client.ray_client_helpers import ray_start_client_server
-from ray.util.client.ray_client_helpers import (
-    ray_start_client_server_pair, ray_start_cluster_client_server_pair)
+from ray.util.client.ray_client_helpers import ray_start_client_server_pair
 from ray.test_utils import wait_for_condition
 import ray as real_ray
 from ray.core.generated.gcs_pb2 import ActorTableData
@@ -32,14 +30,8 @@ def server_actor_ref_count(server, n):
     return test_cond
 
 
-@pytest.mark.parametrize(
-    "ray_start_cluster", [{
-        "num_nodes": 1,
-        "do_init": False
-    }], indirect=True)
-def test_delete_refs_on_disconnect(ray_start_cluster):
-    cluster = ray_start_cluster
-    with ray_start_cluster_client_server_pair(cluster.address) as pair:
+def test_delete_refs_on_disconnect(ray_start_regular):
+    with ray_start_client_server_pair() as pair:
         ray, server = pair
 
         @ray.remote
@@ -57,14 +49,10 @@ def test_delete_refs_on_disconnect(ray_start_cluster):
         # And can get the data
         assert ray.get(thing1) == 8
 
-        # Close the client.
+        # Close the client
         ray.close()
 
         wait_for_condition(server_object_ref_count(server, 0), timeout=5)
-
-        # Connect to the real ray again, since we disconnected
-        # upon num_clients = 0.
-        real_ray.init(address=cluster.address)
 
         def test_cond():
             return len(real_ray.objects()) == 0
@@ -85,14 +73,8 @@ def test_delete_ref_on_object_deletion(ray_start_regular):
         wait_for_condition(server_object_ref_count(server, 1), timeout=5)
 
 
-@pytest.mark.parametrize(
-    "ray_start_cluster", [{
-        "num_nodes": 1,
-        "do_init": False
-    }], indirect=True)
-def test_delete_actor_on_disconnect(ray_start_cluster):
-    cluster = ray_start_cluster
-    with ray_start_cluster_client_server_pair(cluster.address) as pair:
+def test_delete_actor_on_disconnect(ray_start_regular):
+    with ray_start_client_server_pair() as pair:
         ray, server = pair
 
         @ray.remote
@@ -123,10 +105,6 @@ def test_delete_actor_on_disconnect(ray_start_cluster):
                 if v["State"] != ActorTableData.DEAD
             ]
             return len(alive_actors) == 0
-
-        # Connect to the real ray again, since we disconnected
-        # upon num_clients = 0.
-        real_ray.init(address=cluster.address)
 
         wait_for_condition(test_cond, timeout=10)
 
@@ -174,9 +152,3 @@ def test_simple_multiple_references(ray_start_regular):
         del ref1
         assert ray.get(ref2) == "hi"
         del ref2
-
-
-if __name__ == "__main__":
-    import sys
-    import pytest
-    sys.exit(pytest.main(["-v", __file__]))
