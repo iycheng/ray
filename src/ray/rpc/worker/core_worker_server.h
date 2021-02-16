@@ -44,7 +44,6 @@ namespace rpc {
   RPC_SERVICE_HANDLER(CoreWorkerService, SpillObjects)                   \
   RPC_SERVICE_HANDLER(CoreWorkerService, RestoreSpilledObjects)          \
   RPC_SERVICE_HANDLER(CoreWorkerService, DeleteSpilledObjects)           \
-  RPC_SERVICE_HANDLER(CoreWorkerService, AddSpilledUrl)                  \
   RPC_SERVICE_HANDLER(CoreWorkerService, PlasmaObjectReady)              \
   RPC_SERVICE_HANDLER(CoreWorkerService, Exit)
 
@@ -66,7 +65,6 @@ namespace rpc {
   DECLARE_VOID_RPC_SERVICE_HANDLER_METHOD(SpillObjects)                   \
   DECLARE_VOID_RPC_SERVICE_HANDLER_METHOD(RestoreSpilledObjects)          \
   DECLARE_VOID_RPC_SERVICE_HANDLER_METHOD(DeleteSpilledObjects)           \
-  DECLARE_VOID_RPC_SERVICE_HANDLER_METHOD(AddSpilledUrl)                  \
   DECLARE_VOID_RPC_SERVICE_HANDLER_METHOD(PlasmaObjectReady)              \
   DECLARE_VOID_RPC_SERVICE_HANDLER_METHOD(Exit)
 

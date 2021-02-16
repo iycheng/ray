@@ -137,9 +137,7 @@ struct CoreWorkerOptions {
   /// be held up in garbage objects.
   std::function<void()> gc_collect;
   /// Application-language callback to spill objects to external storage.
-  std::function<std::vector<std::string>(const std::vector<ObjectID> &,
-                                         const std::vector<std::string> &)>
-      spill_objects;
+  std::function<std::vector<std::string>(const std::vector<ObjectID> &)> spill_objects;
   /// Application-language callback to restore objects from external storage.
   std::function<int64_t(const std::vector<ObjectID> &, const std::vector<std::string> &)>
       restore_spilled_objects;
@@ -912,11 +910,6 @@ class CoreWorker : public rpc::CoreWorkerServiceHandler {
   void HandleSpillObjects(const rpc::SpillObjectsRequest &request,
                           rpc::SpillObjectsReply *reply,
                           rpc::SendReplyCallback send_reply_callback) override;
-
-  // Add spilled URL to owned reference.
-  void HandleAddSpilledUrl(const rpc::AddSpilledUrlRequest &request,
-                           rpc::AddSpilledUrlReply *reply,
-                           rpc::SendReplyCallback send_reply_callback) override;
 
   // Restore objects from external storage.
   void HandleRestoreSpilledObjects(const rpc::RestoreSpilledObjectsRequest &request,
