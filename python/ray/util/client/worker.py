@@ -172,11 +172,7 @@ class Worker:
         except grpc.RpcError as e:
             raise e.details()
         if not data.valid:
-            try:
-                err = cloudpickle.loads(data.error)
-            except Exception:
-                logger.exception("Failed to deserialize {}".format(data.error))
-                raise
+            err = cloudpickle.loads(data.error)
             logger.error(err)
             raise err
         return loads_from_server(data.data)
@@ -260,12 +256,7 @@ class Worker:
         except grpc.RpcError as e:
             raise decode_exception(e.details)
         if not ticket.valid:
-            try:
-                raise cloudpickle.loads(ticket.error)
-            except Exception:
-                logger.exception("Failed to deserialize {}".format(
-                    ticket.error))
-                raise
+            raise cloudpickle.loads(ticket.error)
         return ticket.return_ids
 
     def call_release(self, id: bytes) -> None:
