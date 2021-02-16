@@ -147,11 +147,6 @@ class Count(Metric):
         self._metric = CythonCount(self._name, self._description, self._unit,
                                    self._tag_keys)
 
-    def __reduce__(self):
-        deserializer = Count
-        serialized_data = (self._name, self._description, self._tag_keys)
-        return deserializer, serialized_data
-
 
 class Histogram(Metric):
     """Histogram distribution of metric points.
@@ -182,12 +177,6 @@ class Histogram(Metric):
                                        self._unit, self.boundaries,
                                        self._tag_keys)
 
-    def __reduce__(self):
-        deserializer = Histogram
-        serialized_data = (self._name, self._description, self.boundaries,
-                           self._tag_keys)
-        return deserializer, serialized_data
-
     @property
     def info(self):
         """Return information about histogram metric."""
@@ -214,11 +203,6 @@ class Gauge(Metric):
         super().__init__(name, description, tag_keys)
         self._metric = CythonGauge(self._name, self._description, self._unit,
                                    self._tag_keys)
-
-    def __reduce__(self):
-        deserializer = Gauge
-        serialized_data = (self._name, self._description, self._tag_keys)
-        return deserializer, serialized_data
 
 
 __all__ = [
