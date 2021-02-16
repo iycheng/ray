@@ -10,9 +10,7 @@ from ray.autoscaler._private.providers import _get_default_config
 
 RAY_NAMESPACE = os.environ.get("RAY_OPERATOR_POD_NAMESPACE")
 
-RAY_CONFIG_DIR = os.environ.get("RAY_CONFIG_DIR") or \
-    os.path.expanduser("~/ray_cluster_configs")
-
+RAY_CONFIG_DIR = os.path.expanduser("~/ray_cluster_configs")
 CONFIG_SUFFIX = "_config.yaml"
 
 CONFIG_FIELDS = {
