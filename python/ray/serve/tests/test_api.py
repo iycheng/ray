@@ -875,10 +875,6 @@ def test_serve_metrics(serve_instance):
             # gauge
             "replica_processing_queries",
             "replica_queued_queries",
-            # handle
-            "serve_handle_request_counter",
-            # ReplicaSet
-            "backend_queued_queries"
         ]
         for metric in expected_metrics:
             # For the final error round
