@@ -21,6 +21,9 @@ Tune is a Python library for experiment execution and hyperparameter tuning at a
 
 **Want to get started?** Head over to the :doc:`Key Concepts page </tune/key-concepts>`.
 
+.. tip:: Join the `Ray community slack <https://forms.gle/9TSdDYUgxYs8SA9e8>`_ to discuss Ray Tune (and other Ray libraries)!
+
+
 Quick Start
 -----------
 
