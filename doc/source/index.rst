@@ -117,17 +117,14 @@ Ray provides Python, Java, and *EXPERIMENTAL* C++ API. And Ray uses Tasks (funct
     | The C++ Ray API is currently experimental with limited support. You can track its development `here <https://github.com/ray-project/ray/milestone/17>`__ and report issues on GitHub.
     | Run the following commands to get started:
     | - Build ray from source with *bazel* as shown `here <https://docs.ray.io/en/master/development.html#building-ray-full>`__.
-    | - Modify `cpp/example/example.cc`.
-    | - Run `"bazel build //cpp:example"`.
-    | Option 1:, run the example directly with a dynamic library path. It will start a Ray cluster automatically.
+    | - Run `"cd ray/cpp"`.
+    | - Run `"cp dev_BUILD.bazel BUILD.bazel"`.
+    | - Modify `src/ray/example/example.cc`.
     | - Run `"ray stop"`.
-    | - Run `"./bazel-bin/cpp/example/example --dynamic-library-path=bazel-bin/cpp/example/example.so"`
-    | Option 2: connect to an existing Ray cluster with a known redis address (e.g. `127.0.0.1:6379`).
-    | - Run `"ray stop"`.
-    | - Run `"ray start --head --port 6379 --redis-password 5241590000000000 --node-manager-port 62665"`.
-    | - Run `"./bazel-bin/cpp/example/example --dynamic-library-path=bazel-bin/cpp/example/example.so --redis-address=127.0.0.1:6379"`.
+    | - Run `"bazel build //cpp:all"`.
+    | - Run `"bazel run //cpp:example"`.
 
-    .. literalinclude:: ../../cpp/example/example.cc
+    .. literalinclude:: ../../cpp/src/ray/example/example.cc
        :language: cpp
 
 You can also get started by visiting our `Tutorials <https://github.com/ray-project/tutorial>`_. For the latest wheels (nightlies), see the `installation page <installation.html>`__.
