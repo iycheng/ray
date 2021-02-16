@@ -75,9 +75,9 @@ Training a Spark DataFrame with TensorFlow
   tensorflow_model = estimator.get_model()
 
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Training a Spark DataFrame with PyTorch
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Training a Spark DataFrame with TensorFlow
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Similarly, ``raydp.torch.TorchEstimator`` provides an API for training with
 PyTorch.
