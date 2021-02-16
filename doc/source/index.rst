@@ -231,12 +231,11 @@ Papers
 .. toctree::
    :hidden:
    :maxdepth: -1
-   :caption: Ray Clusters/Autoscaler
+   :caption: Ray Cluster
 
    cluster/index.rst
-   cluster/quickstart.rst
-   cluster/reference.rst
-   cluster/cloud.rst
+   cluster/launcher.rst
+   cluster/autoscaling.rst
    cluster/deploy.rst
 
 .. toctree::
