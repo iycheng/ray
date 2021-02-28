@@ -44,6 +44,7 @@ enum TablePrefix {
   TABLE_PREFIX_MAX = 20;
   PLACEMENT_GROUP_SCHEDULE = 21;
   PLACEMENT_GROUP = 22;
+  PACKAGE = 23;
 }
 
 // The channel that Add operations to the Table should be published on, if any.
@@ -145,6 +146,13 @@ message ActorTableData {
   repeated ResourceMapEntry resource_mapping = 15;
   // The process id of this actor.
   uint32 pid = 16;
+}
+
+message PackageTableData  {
+  // UIR for the package
+  string uri = 1;
+  // Reference for gc
+  uint32 reference_count = 2;
 }
 
 message ErrorTableData {

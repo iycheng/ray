@@ -30,6 +30,7 @@ using rpc::HeartbeatTableData;
 using rpc::JobTableData;
 using rpc::ObjectLocationInfo;
 using rpc::ObjectTableData;
+using rpc::PackageTableData;
 using rpc::PlacementGroupTableData;
 using rpc::ProfileTableData;
 using rpc::ResourceMap;
@@ -155,6 +156,14 @@ class GcsJobTable : public GcsTable<JobID, JobTableData> {
   explicit GcsJobTable(std::shared_ptr<StoreClient> &store_client)
       : GcsTable(store_client) {
     table_name_ = TablePrefix_Name(TablePrefix::JOB);
+  }
+};
+
+class GcsPackageTable : public GcsTable<PackageID, PackageTableData> {
+ public:
+  explicit GcsPackageTable(std::shared_ptr<StoreClient> &store_client)
+      : GcsTable(store_client) {
+    table_name_ = TablePrefix_Name(TablePrefix::PACKAGE);
   }
 };
 
@@ -308,6 +317,11 @@ class GcsTableStorage {
     return *placement_group_table_;
   }
 
+  GcsPackageTable &PackageTable() {
+    RAY_CHECK(package_table_ != nullptr);
+    return *package_table_;
+  }
+
   GcsTaskTable &TaskTable() {
     RAY_CHECK(task_table_ != nullptr);
     return *task_table_;
@@ -372,6 +386,7 @@ class GcsTableStorage {
   std::shared_ptr<StoreClient> store_client_;
   std::unique_ptr<GcsJobTable> job_table_;
   std::unique_ptr<GcsActorTable> actor_table_;
+  std::unique_ptr<GcsPackageTable> package_table_;
   std::unique_ptr<GcsPlacementGroupTable> placement_group_table_;
   std::unique_ptr<GcsTaskTable> task_table_;
   std::unique_ptr<GcsTaskLeaseTable> task_lease_table_;
@@ -403,6 +418,7 @@ class RedisGcsTableStorage : public GcsTableStorage {
     object_table_.reset(new GcsObjectTable(store_client_));
     node_table_.reset(new GcsNodeTable(store_client_));
     node_resource_table_.reset(new GcsNodeResourceTable(store_client_));
+    package_table_.reset(new GcsPackageTable(store_client_));
     placement_group_schedule_table_.reset(
         new GcsPlacementGroupScheduleTable(store_client_));
     heartbeat_table_.reset(new GcsHeartbeatTable(store_client_));
@@ -431,6 +447,7 @@ class InMemoryGcsTableStorage : public GcsTableStorage {
     object_table_.reset(new GcsObjectTable(store_client_));
     node_table_.reset(new GcsNodeTable(store_client_));
     node_resource_table_.reset(new GcsNodeResourceTable(store_client_));
+    package_table_.reset(new GcsPackageTable(store_client_));
     placement_group_schedule_table_.reset(
         new GcsPlacementGroupScheduleTable(store_client_));
     heartbeat_table_.reset(new GcsHeartbeatTable(store_client_));

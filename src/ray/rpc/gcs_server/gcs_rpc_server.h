@@ -36,6 +36,9 @@ namespace rpc {
 #define NODE_RESOURCE_INFO_SERVICE_RPC_HANDLER(HANDLER) \
   RPC_SERVICE_HANDLER(NodeResourceInfoGcsService, HANDLER)
 
+#define PACKAGE_INFO_SERVICE_HANDLER(HANDLER) \
+  RPC_SERVICE_HANDLER(PackageInfoGcsService, HANDLER)
+
 #define OBJECT_INFO_SERVICE_RPC_HANDLER(HANDLER) \
   RPC_SERVICE_HANDLER(ObjectInfoGcsService, HANDLER)
 
@@ -298,6 +301,43 @@ class HeartbeatInfoGrpcService : public GrpcService {
   HeartbeatInfoGcsService::AsyncService service_;
   /// The service handler that actually handle the requests.
   HeartbeatInfoGcsServiceHandler &service_handler_;
+};
+
+class PackageInfoGcsServiceHandler {
+ public:
+  virtual ~PackageInfoGcsServiceHandler() = default;
+  virtual void HandleGetPackageInfo(const GetPackageInfoRequest &request,
+                                    GetPackageInfoReply *reply,
+                                    SendReplyCallback send_reply_callback) = 0;
+  virtual void HandleFetchPackage(const FetchPackageRequest &request,
+                                  FetchPackageReply *reply,
+                                  SendReplyCallback send_reply_callback) = 0;
+  virtual void HandlePushPackage(const PushPackageRequest &request,
+                                 PushPackageReply *reply,
+                                 SendReplyCallback send_reply_callback) = 0;
+};
+
+class PackageInfoGrpcService : public GrpcService {
+ public:
+  explicit PackageInfoGrpcService(boost::asio::io_service &io_service,
+                                  PackageInfoGcsServiceHandler &handler)
+      : GrpcService(io_service), service_handler_(handler){};
+
+ protected:
+  grpc::Service &GetGrpcService() override { return service_; }
+  void InitServerCallFactories(
+      const std::unique_ptr<grpc::ServerCompletionQueue> &cq,
+      std::vector<std::unique_ptr<ServerCallFactory>> *server_call_factories) override {
+    PACKAGE_INFO_SERVICE_HANDLER(GetPackageInfo);
+    PACKAGE_INFO_SERVICE_HANDLER(FetchPackage);
+    PACKAGE_INFO_SERVICE_HANDLER(PushPackage);
+  }
+
+ private:
+  /// The grpc async service object.
+  PackageInfoGcsService::AsyncService service_;
+  /// The service handler that actually handle the requests.
+  PackageInfoGcsServiceHandler &service_handler_;
 };
 
 class ObjectInfoGcsServiceHandler {
@@ -564,6 +604,7 @@ using TaskInfoHandler = TaskInfoGcsServiceHandler;
 using StatsHandler = StatsGcsServiceHandler;
 using WorkerInfoHandler = WorkerInfoGcsServiceHandler;
 using PlacementGroupInfoHandler = PlacementGroupInfoGcsServiceHandler;
+using PackageInfoHandler = PackageInfoGcsServiceHandler;
 
 }  // namespace rpc
 }  // namespace ray

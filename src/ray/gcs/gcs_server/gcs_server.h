@@ -47,6 +47,7 @@ class GcsActorManager;
 class GcsJobManager;
 class GcsWorkerManager;
 class GcsPlacementGroupManager;
+class GcsPackageManager;
 
 /// The GcsServer will take over all requests from ServiceBasedGcsClient and transparent
 /// transmit the command to the backend reliable storage for the time being.
@@ -149,6 +150,8 @@ class GcsServer {
   std::shared_ptr<GcsNodeManager> gcs_node_manager_;
   /// The heartbeat manager.
   std::shared_ptr<GcsHeartbeatManager> gcs_heartbeat_manager_;
+  /// The gcs package manger handler.
+  std::unique_ptr<GcsPackageManager> gcs_package_manager_;
   /// The gcs redis failure detector.
   std::shared_ptr<GcsRedisFailureDetector> gcs_redis_failure_detector_;
   /// The gcs actor manager.
@@ -179,6 +182,8 @@ class GcsServer {
   std::unique_ptr<GcsWorkerManager> gcs_worker_manager_;
   /// Worker info service.
   std::unique_ptr<rpc::WorkerInfoGrpcService> worker_info_service_;
+  /// Package info service
+  std::unique_ptr<rpc::PackageInfoGrpcService> package_info_service_;
   /// Placement Group info handler and service.
   std::unique_ptr<rpc::PlacementGroupInfoGrpcService> placement_group_info_service_;
   /// Backend client.
