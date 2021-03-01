@@ -1507,5 +1507,53 @@ Status ServiceBasedPlacementGroupInfoAccessor::AsyncWaitUntilReady(
   return Status::OK();
 }
 
+ServiceBasedPackageInfoAccessor::ServiceBasedPackageInfoAccessor(
+    ServiceBasedGcsClient *client_impl)
+    : client_impl_(client_impl) {}
+
+Status ServiceBasedPackageInfoAccessor::AsyncGetPackageInfo(
+    const PackageID &package_id,
+    const OptionalItemCallback<rpc::PackageTableData> &callback) {
+  rpc::GetPackageInfoRequest request;
+  request.set_package_id(package_id.Binary());
+  client_impl_->GetGcsRpcClient().GetPackageInfo(request, [callback](
+      const Status &status, const rpc::GetPackageInfoReply &reply) {
+    callback(status, reply.package_info());
+  });
+  return Status::OK();
+}
+
+Status ServiceBasedPackageInfoAccessor::AsyncFetchPackage(
+    const PackageID &package_id,
+    const OptionalItemCallback<std::string> &callback) {
+  rpc::FetchPackageRequest request;
+  request.set_package_id(package_id.Binary());
+  client_impl_->GetGcsRpcClient().FetchPackage(request, [callback](
+      const Status &status, const rpc::FetchPackageReply &reply) {
+    callback(status, reply.package_data());
+  });
+  return Status::OK();
+}
+
+Status ServiceBasedPackageInfoAccessor::AsyncPushPackage(
+    const PackageID &package_id,
+    const std::string& uri,
+    bool skip_gc,
+    const std::string& code,
+    const StatusCallback &callback) {
+  rpc::PushPackageRequest request;
+  request.set_package_id(package_id.Binary());
+  request.set_uri(uri);
+  request.set_skip_gc(skip_gc);
+  request.mutable_code()->set_data(code);
+
+  // client_impl_->GetGcsRpcClient().FetchPackage(request, [callback](
+  //     const PushPackageReply &status) {
+  //   callback(status.);
+  // });
+  return Status::OK();
+}
+
+
 }  // namespace gcs
 }  // namespace ray

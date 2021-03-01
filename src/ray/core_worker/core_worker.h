@@ -167,8 +167,6 @@ struct CoreWorkerOptions {
   /// The port number of a metrics agent that imports metrics from core workers.
   /// -1 means there's no such agent.
   int metrics_agent_port;
-  /// Package of this worker
-  PackageID package_id;
 };
 
 /// Lifecycle management of one or more `CoreWorker` instances in a process.
@@ -984,8 +982,11 @@ class CoreWorker : public rpc::CoreWorkerServiceHandler {
   /// Heartbeat for internal bookkeeping.
   void InternalHeartbeat();
 
-  /// Fetch package
-  void FetchPackage();
+  /// Package related functions
+  void FetchPackage(PackageID package_id);
+  void PushPackage(PackageID package_id,
+                   const std::string& uri,
+                   const std::string& content);
 
   ///
   /// Private methods related to task submission.

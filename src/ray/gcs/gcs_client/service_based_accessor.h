@@ -465,10 +465,24 @@ class ServiceBasedPlacementGroupInfoAccessor : public PlacementGroupInfoAccessor
 };
 
 class ServiceBasedPackageInfoAccessor : public PackageInfoAccessor {
-  public:
+ public:
   explicit ServiceBasedPackageInfoAccessor(ServiceBasedGcsClient *client_impl);
-  virtual ~ServiceBasedPackageInfoAccessor() = default;
+  ~ServiceBasedPackageInfoAccessor() override = default;
+  Status AsyncGetPackageInfo(
+      const PackageID &package_id,
+      const OptionalItemCallback<rpc::PackageTableData> &callback) override;
+  Status AsyncFetchPackage(
+      const PackageID &package_id,
+      const OptionalItemCallback<std::string> &callback) override;
+  Status AsyncPushPackage(
+      const PackageID &package_id,
+      const std::string& uri,
+      bool skip_gc,
+      const std::string& code,
+      const StatusCallback &callback) override;
 
+ private:
+  ServiceBasedGcsClient *client_impl_;
 };
 
 }  // namespace gcs

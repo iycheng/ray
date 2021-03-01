@@ -389,9 +389,6 @@ CoreWorker::CoreWorker(const CoreWorkerOptions &options, const WorkerID &worker_
   RAY_CHECK_OK(gcs_client_->Connect(io_service_));
   RegisterToGcs();
 
-  // Fetch package
-  FetchPackage();
-
   // Register a callback to monitor removed nodes.
   auto on_node_change = [this](const NodeID &node_id, const rpc::GcsNodeInfo &data) {
     if (data.state() == rpc::GcsNodeInfo::DEAD) {
@@ -821,18 +818,29 @@ void CoreWorker::InternalHeartbeat() {
   }
 }
 
-void CoreWorker::FetchPackage() {
-  if(options_.package_id.IsNil()) {
-    RAY_LOG(INFO) << "No package to be fetched for job: " << options_.job_id;
-    return;
-  }
-  auto pkg_path = std::string("/tmp/pkg_") + options_.package_id.Hex() + ".zip";
+void CoreWorker::FetchPackage(PackageID package_id) {
+  auto pkg_path = std::string("/tmp/pkg_") + package_id.Hex() + ".zip";
   sync::FileLock lock(pkg_path);
   std::lock_guard<sync::FileLock> guard(lock);
   if(boost::filesystem::exists(pkg_path)) {
-    RAY_LOG(INFO) << "Skip fetching package(" << options_.package_id << ") for job "
+    RAY_LOG(INFO) << "Skip fetching package(" << package_id << ") for job "
                   << options_.job_id;
     return;
+  } else {
+    // std::promise<std::string> promise;
+    // RAY_CHECK_OK(gcs_client_->Packages().AsyncFetchPackage(
+    //     package_id, [&package_id, &promise, &pkg_path](const Status &status, const std::string& code_content) {
+    //       if(status.ok()) {
+    //         std::ofstream writer(pkg_path.c_str(), std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
+    //         writer.write(code_content.data(), code_content.size());
+    //         writer.flush();
+    //         writer.close();
+    //         RAY_LOG(INFO) << "Successfully fetch package(" << package_id << ") into local file(" << pkg_path
+    //                       << ") with " << code_content.size() << " bytes";
+    //       } else {
+    //         RAY_LOG(ERROR) << "Fetching package: " << package_id << " failed with status: " << status;
+    //       }
+    //     }));
   }
 }
 

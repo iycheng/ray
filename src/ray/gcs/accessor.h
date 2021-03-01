@@ -765,7 +765,18 @@ class PlacementGroupInfoAccessor {
 class PackageInfoAccessor {
  public:
   virtual ~PackageInfoAccessor() = default;
-
+  virtual Status AsyncGetPackageInfo(
+      const PackageID &package_id,
+      const OptionalItemCallback<rpc::PackageTableData> &callback) = 0;
+  virtual Status AsyncFetchPackage(
+      const PackageID &package_id,
+      const OptionalItemCallback<std::string> &callback) = 0;
+  virtual Status AsyncPushPackage(
+      const PackageID &package_id,
+      const std::string& uri,
+      bool skip_gc,
+      const std::string& code,
+      const StatusCallback &callback) = 0;
 };
 
 }  // namespace gcs

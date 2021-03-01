@@ -115,6 +115,10 @@ class GcsRpcClient {
         std::unique_ptr<GrpcClient<PlacementGroupInfoGcsService>>(
             new GrpcClient<PlacementGroupInfoGcsService>(address, port,
                                                          client_call_manager));
+    package_info_grpc_client_ =
+        std::unique_ptr<GrpcClient<PackageInfoGcsService>>(
+            new GrpcClient<PackageInfoGcsService>(address, port,
+                                                  client_call_manager));
   }
 
   /// Add job info to gcs server.
@@ -262,6 +266,17 @@ class GcsRpcClient {
   VOID_GCS_RPC_CLIENT_METHOD(PlacementGroupInfoGcsService, WaitPlacementGroupUntilReady,
                              placement_group_info_grpc_client_, )
 
+  /// Get pacakge info from GCS Service by package id.
+  VOID_GCS_RPC_CLIENT_METHOD(PackageInfoGcsService, GetPackageInfo,
+                             package_info_grpc_client_, )
+
+  /// Get pacakge info from GCS Service by package id.
+  VOID_GCS_RPC_CLIENT_METHOD(PackageInfoGcsService, FetchPackage,
+                             package_info_grpc_client_, )
+
+  /// Get pacakge info from GCS Service by package id.
+  VOID_GCS_RPC_CLIENT_METHOD(PackageInfoGcsService, PushPackage,
+                             package_info_grpc_client_, )
  private:
   std::function<void(GcsServiceFailureType)> gcs_service_failure_detected_;
 
@@ -277,6 +292,7 @@ class GcsRpcClient {
   std::unique_ptr<GrpcClient<WorkerInfoGcsService>> worker_info_grpc_client_;
   std::unique_ptr<GrpcClient<PlacementGroupInfoGcsService>>
       placement_group_info_grpc_client_;
+  std::unique_ptr<GrpcClient<PackageInfoGcsService>> package_info_grpc_client_;
 };
 
 }  // namespace rpc
