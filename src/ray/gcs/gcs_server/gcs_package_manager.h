@@ -16,6 +16,7 @@
 
 #include "ray/gcs/gcs_server/gcs_init_data.h"
 #include "ray/gcs/gcs_server/gcs_table_storage.h"
+#include "ray/gcs/pubsub/gcs_pub_sub.h"
 #include "ray/rpc/gcs_server/gcs_rpc_server.h"
 
 namespace ray {
@@ -23,31 +24,31 @@ namespace gcs {
 
 class GcsPackageManager : public rpc::PackageInfoHandler {
  public:
-  GcsPackageManager(gcs::RedisGcsTableStorage &gcs_table_storage,
+  GcsPackageManager(gcs::GcsPackageTable *gcs_package_table,
+                    gcs::GcsCodeStorageTable *gcs_code_storage_table,
                     gcs::GcsPubSub *gcs_pub_sub);
-  void HandleReportWorkerFailure(const ReportWorkerFailureRequest &request,
-                                 ReportWorkerFailureReply *reply,
-                                 SendReplyCallback send_reply_callback) override;
 
-  void HandleGetWorkerInfo(const GetWorkerInfoRequest &request, GetWorkerInfoReply *reply,
-                           SendReplyCallback send_reply_callback) override;
-
-  void HandleGetAllWorkerInfo(const GetAllWorkerInfoRequest &request,
-                              GetAllWorkerInfoReply *reply,
-                              SendReplyCallback send_reply_callback) override;
-
-  void HandleAddWorkerInfo(const AddWorkerInfoRequest &request, AddWorkerInfoReply *reply,
-                           SendReplyCallback send_reply_callback) override;
+  void HandleGetPackageInfo(const rpc::GetPackageInfoRequest &request,
+                            rpc::GetPackageInfoReply *reply,
+                            rpc::SendReplyCallback send_reply_callback) override;
+  void HandleFetchPackage(const rpc::FetchPackageRequest &request,
+                          rpc::FetchPackageReply *reply,
+                          rpc::SendReplyCallback send_reply_callback) override;
+  void HandlePushPackage(const rpc::PushPackageRequest &request,
+                         rpc::PushPackageReply *reply,
+                         rpc::SendReplyCallback send_reply_callback) override;
 
   void LockPackage(const PackageID &package_id);
   void UnlockPackage(const PackageID &package_id);
 
-  ~GcsPackageInfoHandler() override {}
+  ~GcsPackageManager() override {}
 
  private:
-  gcs::GcsTableStorage *gcs_table_storage_;
+  gcs::GcsPackageTable *gcs_package_table_;
+  gcs::GcsCodeStorageTable *gcs_code_storage_table_;
   /// A publisher for publishing gcs messages.
   gcs::GcsPubSub *gcs_pub_sub_;
+  std::unordered_map<PackageID, uint32_t> reference_count_;
 };
 
 }  // namespace gcs

@@ -94,6 +94,9 @@ class GcsServer {
   /// Initialize gcs job manager.
   void InitGcsJobManager();
 
+  /// Initialize gcs package manager.
+  void InitGcsPackageManager();
+
   /// Initialize gcs actor manager.
   void InitGcsActorManager(const GcsInitData &gcs_init_data);
 
@@ -150,8 +153,6 @@ class GcsServer {
   std::shared_ptr<GcsNodeManager> gcs_node_manager_;
   /// The heartbeat manager.
   std::shared_ptr<GcsHeartbeatManager> gcs_heartbeat_manager_;
-  /// The gcs package manger handler.
-  std::unique_ptr<GcsPackageManager> gcs_package_manager_;
   /// The gcs redis failure detector.
   std::shared_ptr<GcsRedisFailureDetector> gcs_redis_failure_detector_;
   /// The gcs actor manager.
@@ -172,6 +173,9 @@ class GcsServer {
   /// Object info handler and service.
   std::unique_ptr<gcs::GcsObjectManager> gcs_object_manager_;
   std::unique_ptr<rpc::ObjectInfoGrpcService> object_info_service_;
+  /// The gcs package manger and service.
+  std::unique_ptr<GcsPackageManager> gcs_package_manager_;
+  std::unique_ptr<rpc::PackageInfoGrpcService> gcs_package_service_;
   /// Task info handler and service.
   std::unique_ptr<rpc::TaskInfoHandler> task_info_handler_;
   std::unique_ptr<rpc::TaskInfoGrpcService> task_info_service_;

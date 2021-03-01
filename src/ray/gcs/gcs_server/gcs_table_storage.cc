@@ -140,6 +140,7 @@ template class GcsTable<UniqueID, ProfileTableData>;
 template class GcsTable<WorkerID, WorkerTableData>;
 template class GcsTable<ActorID, ActorTableData>;
 template class GcsTable<PackageID, PackageTableData>;
+template class GcsTable<PackageID, CodeStorageTableData>;
 template class GcsTable<TaskID, TaskTableData>;
 template class GcsTable<TaskID, TaskLeaseData>;
 template class GcsTable<TaskID, TaskReconstructionData>;

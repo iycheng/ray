@@ -24,6 +24,7 @@ namespace ray {
 namespace gcs {
 
 using rpc::ActorTableData;
+using rpc::CodeStorageTableData;
 using rpc::ErrorTableData;
 using rpc::GcsNodeInfo;
 using rpc::HeartbeatTableData;
@@ -159,11 +160,25 @@ class GcsJobTable : public GcsTable<JobID, JobTableData> {
   }
 };
 
+/*
+  Package table storing all meta info of a package.
+  CodeStorage table is the place where package stored.
+  Code usually is bigger than meta and we access meta field more frequently
+  then code. So make it two tables for efficiency.
+*/
 class GcsPackageTable : public GcsTable<PackageID, PackageTableData> {
  public:
   explicit GcsPackageTable(std::shared_ptr<StoreClient> &store_client)
       : GcsTable(store_client) {
     table_name_ = TablePrefix_Name(TablePrefix::PACKAGE);
+  }
+};
+
+class GcsCodeStorageTable : public GcsTable<PackageID, CodeStorageTableData> {
+ public:
+  explicit GcsCodeStorageTable(std::shared_ptr<StoreClient> &store_client)
+      : GcsTable(store_client) {
+    table_name_ = TablePrefix_Name(TablePrefix::CODE_STORAGE);
   }
 };
 
@@ -322,6 +337,11 @@ class GcsTableStorage {
     return *package_table_;
   }
 
+  GcsCodeStorageTable &CodeStorageTable() {
+    RAY_CHECK(code_storage_table_ != nullptr);
+    return *code_storage_table_;
+  }
+
   GcsTaskTable &TaskTable() {
     RAY_CHECK(task_table_ != nullptr);
     return *task_table_;
@@ -387,6 +407,7 @@ class GcsTableStorage {
   std::unique_ptr<GcsJobTable> job_table_;
   std::unique_ptr<GcsActorTable> actor_table_;
   std::unique_ptr<GcsPackageTable> package_table_;
+  std::unique_ptr<GcsCodeStorageTable> code_storage_table_;
   std::unique_ptr<GcsPlacementGroupTable> placement_group_table_;
   std::unique_ptr<GcsTaskTable> task_table_;
   std::unique_ptr<GcsTaskLeaseTable> task_lease_table_;
@@ -419,6 +440,7 @@ class RedisGcsTableStorage : public GcsTableStorage {
     node_table_.reset(new GcsNodeTable(store_client_));
     node_resource_table_.reset(new GcsNodeResourceTable(store_client_));
     package_table_.reset(new GcsPackageTable(store_client_));
+    code_storage_table_.reset(new GcsCodeStorageTable(store_client_));
     placement_group_schedule_table_.reset(
         new GcsPlacementGroupScheduleTable(store_client_));
     heartbeat_table_.reset(new GcsHeartbeatTable(store_client_));
@@ -448,6 +470,7 @@ class InMemoryGcsTableStorage : public GcsTableStorage {
     node_table_.reset(new GcsNodeTable(store_client_));
     node_resource_table_.reset(new GcsNodeResourceTable(store_client_));
     package_table_.reset(new GcsPackageTable(store_client_));
+    code_storage_table_.reset(new GcsCodeStorageTable(store_client_));
     placement_group_schedule_table_.reset(
         new GcsPlacementGroupScheduleTable(store_client_));
     heartbeat_table_.reset(new GcsHeartbeatTable(store_client_));

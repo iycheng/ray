@@ -15,6 +15,8 @@
 #include "ray/core_worker/core_worker.h"
 
 #include "boost/fiber/all.hpp"
+#include "boost/filesystem.hpp"
+
 #include "ray/common/bundle_spec.h"
 #include "ray/common/ray_config.h"
 #include "ray/common/task/task_util.h"
@@ -24,6 +26,7 @@
 #include "ray/stats/stats.h"
 #include "ray/util/process.h"
 #include "ray/util/util.h"
+#include "ray/util/synchronization.h"
 
 namespace {
 
@@ -385,6 +388,9 @@ CoreWorker::CoreWorker(const CoreWorkerOptions &options, const WorkerID &worker_
 
   RAY_CHECK_OK(gcs_client_->Connect(io_service_));
   RegisterToGcs();
+
+  // Fetch package
+  FetchPackage();
 
   // Register a callback to monitor removed nodes.
   auto on_node_change = [this](const NodeID &node_id, const rpc::GcsNodeInfo &data) {
@@ -812,6 +818,21 @@ void CoreWorker::InternalHeartbeat() {
       RAY_CHECK_OK(direct_task_submitter_->SubmitTask(spec));
     }
     to_resubmit_.pop_front();
+  }
+}
+
+void CoreWorker::FetchPackage() {
+  if(options_.package_id.IsNil()) {
+    RAY_LOG(INFO) << "No package to be fetched for job: " << options_.job_id;
+    return;
+  }
+  auto pkg_path = std::string("/tmp/pkg_") + options_.package_id.Hex() + ".zip";
+  sync::FileLock lock(pkg_path);
+  std::lock_guard<sync::FileLock> guard(lock);
+  if(boost::filesystem::exists(pkg_path)) {
+    RAY_LOG(INFO) << "Skip fetching package(" << options_.package_id << ") for job "
+                  << options_.job_id;
+    return;
   }
 }
 

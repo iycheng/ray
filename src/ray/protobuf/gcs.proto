@@ -45,6 +45,7 @@ enum TablePrefix {
   PLACEMENT_GROUP_SCHEDULE = 21;
   PLACEMENT_GROUP = 22;
   PACKAGE = 23;
+  CODE_STORAGE = 24;
 }
 
 // The channel that Add operations to the Table should be published on, if any.
@@ -148,11 +149,17 @@ message ActorTableData {
   uint32 pid = 16;
 }
 
-message PackageTableData  {
+message PackageTableData {
   // UIR for the package
   string uri = 1;
-  // Reference for gc
-  uint32 reference_count = 2;
+  // Skip GC will be true when we want to manage the package manually
+  bool skip_gc = 2;
+ // Reference for gc
+  uint32 reference_count = 3;
+}
+
+message CodeStorageTableData {
+  bytes data = 1;
 }
 
 message ErrorTableData {

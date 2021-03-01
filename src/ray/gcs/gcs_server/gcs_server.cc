@@ -20,6 +20,7 @@
 #include "ray/gcs/gcs_server/gcs_job_manager.h"
 #include "ray/gcs/gcs_server/gcs_node_manager.h"
 #include "ray/gcs/gcs_server/gcs_object_manager.h"
+#include "ray/gcs/gcs_server/gcs_package_manager.h"
 #include "ray/gcs/gcs_server/gcs_placement_group_manager.h"
 #include "ray/gcs/gcs_server/gcs_worker_manager.h"
 #include "ray/gcs/gcs_server/stats_handler_impl.h"
@@ -86,6 +87,9 @@ void GcsServer::DoStart(const GcsInitData &gcs_init_data) {
 
   // Init gcs actor manager.
   InitGcsActorManager(gcs_init_data);
+
+  // Init gcs package manager.
+  InitGcsPackageManager();
 
   // Init object manager.
   InitObjectManager(gcs_init_data);
@@ -287,6 +291,15 @@ void GcsServer::InitStatsHandler() {
   // Register service.
   stats_service_.reset(new rpc::StatsGrpcService(main_service_, *stats_handler_));
   rpc_server_.RegisterService(*stats_service_);
+}
+
+void GcsServer::InitGcsPackageManager() {
+  gcs_package_manager_.reset(
+      new GcsPackageManager(&gcs_table_storage_->PackageTable(),
+                            &gcs_table_storage_->CodeStorageTable(), gcs_pub_sub_.get()));
+  gcs_package_service_.reset(
+      new rpc::PackageInfoGrpcService(main_service_, *gcs_package_manager_));
+  rpc_server_.RegisterService(*gcs_package_service_);
 }
 
 void GcsServer::InitGcsWorkerManager() {

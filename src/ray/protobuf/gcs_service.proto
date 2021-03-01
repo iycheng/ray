@@ -503,7 +503,7 @@ message GetPackageInfoRequest {
 
 message GetPackageInfoReply {
   GcsStatus status = 1;
-  PackageTableData package_data = 2;
+  PackageTableData package_info = 2;
 }
 
 message FetchPackageRequest {
@@ -512,16 +512,20 @@ message FetchPackageRequest {
 }
 
 message FetchPackageReply {
-  bytes package_data = 1;
+  GcsStatus status = 1;
+  bytes package_data = 2;
 }
 
 message PushPackageRequest {
-  bytes from_id = 1;
-  bytes package_id = 2;
-  bytes package_data = 3;
+  bytes package_id = 1;
+  string uri = 2;
+  bool skip_gc = 3;
+  CodeStorageTableData code = 4;
 }
 
-message PushPackageReply {}
+message PushPackageReply {
+  GcsStatus status = 1;
+}
 
 // Service for package info access
 service PackageInfoGcsService {

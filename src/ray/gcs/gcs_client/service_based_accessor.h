@@ -464,5 +464,12 @@ class ServiceBasedPlacementGroupInfoAccessor : public PlacementGroupInfoAccessor
   ServiceBasedGcsClient *client_impl_;
 };
 
+class ServiceBasedPackageInfoAccessor : public PackageInfoAccessor {
+  public:
+  explicit ServiceBasedPackageInfoAccessor(ServiceBasedGcsClient *client_impl);
+  virtual ~ServiceBasedPackageInfoAccessor() = default;
+
+};
+
 }  // namespace gcs
 }  // namespace ray

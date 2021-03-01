@@ -762,6 +762,12 @@ class PlacementGroupInfoAccessor {
   PlacementGroupInfoAccessor() = default;
 };
 
+class PackageInfoAccessor {
+ public:
+  virtual ~PackageInfoAccessor() = default;
+
+};
+
 }  // namespace gcs
 
 }  // namespace ray
