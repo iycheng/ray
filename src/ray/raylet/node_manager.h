@@ -386,6 +386,8 @@ class NodeManager : public rpc::NodeManagerServiceHandler {
   /// \return Void.
   void ProcessSubmitTaskMessage(const uint8_t *message_data);
 
+  void ProcessRuntimeCleanup(const std::string &uri);
+
   /// Process client message of NotifyDirectCallTaskBlocked
   ///
   /// \param message_data A pointer to the message data.

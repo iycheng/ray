@@ -467,5 +467,18 @@ class ServiceBasedPlacementGroupInfoAccessor : public PlacementGroupInfoAccessor
   ServiceBasedGcsClient *client_impl_;
 };
 
+class ServiceBasedRuntimeEnvAccessor : public RuntimeEnvAccessor {
+ public:
+  explicit ServiceBasedRuntimeEnvAccessor(ServiceBasedGcsClient *client_impl);
+  virtual ~ServiceBasedRuntimeEnvAccessor() = default;
+  Status AsyncSubscribe(const ItemCallback<std::string> &subscribe,
+                        const StatusCallback &done) override;
+  void AsyncResubscribe(bool is_pubsub_server_restarted) override;
+
+ private:
+  ItemCallback<std::string> subscribe_callback_;
+  ServiceBasedGcsClient *client_impl_;
+};
+
 }  // namespace gcs
 }  // namespace ray

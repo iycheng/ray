@@ -22,6 +22,7 @@
 #include "ray/common/task/task_spec.h"
 #include "ray/gcs/gcs_server/gcs_actor_scheduler.h"
 #include "ray/gcs/gcs_server/gcs_init_data.h"
+#include "ray/gcs/gcs_server/gcs_package_manager.h"
 #include "ray/gcs/gcs_server/gcs_table_storage.h"
 #include "ray/gcs/pubsub/gcs_pub_sub.h"
 #include "ray/rpc/gcs_server/gcs_rpc_server.h"
@@ -65,6 +66,8 @@ class GcsActor {
 
     actor_table_data_.mutable_address()->set_raylet_id(NodeID::Nil().Binary());
     actor_table_data_.mutable_address()->set_worker_id(WorkerID::Nil().Binary());
+
+    actor_table_data_.mutable_runtime_env()->CopyFrom(task_spec.runtime_env());
   }
 
   /// Get the node id on which this actor is created.
@@ -164,7 +167,7 @@ class GcsActorManager : public rpc::ActorInfoHandler {
   GcsActorManager(
       std::shared_ptr<GcsActorSchedulerInterface> scheduler,
       std::shared_ptr<gcs::GcsTableStorage> gcs_table_storage,
-      std::shared_ptr<gcs::GcsPubSub> gcs_pub_sub,
+      std::shared_ptr<gcs::GcsPubSub> gcs_pub_sub, GcsPackageManager *gcs_package_manager,
       std::function<void(const ActorID &)> destroy_ownded_placement_group_if_needed,
       const rpc::ClientFactoryFn &worker_client_factory = nullptr);
 
@@ -419,6 +422,8 @@ class GcsActorManager : public rpc::ActorInfoHandler {
   std::shared_ptr<gcs::GcsTableStorage> gcs_table_storage_;
   /// A publisher for publishing gcs messages.
   std::shared_ptr<gcs::GcsPubSub> gcs_pub_sub_;
+  /// Package manager will be used when actor created and finished
+  GcsPackageManager *gcs_package_manager_;
   /// Factory to produce clients to workers. This is used to communicate with
   /// actors and their owners.
   rpc::ClientFactoryFn worker_client_factory_;

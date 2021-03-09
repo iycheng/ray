@@ -15,6 +15,7 @@
 #pragma once
 
 #include "ray/gcs/gcs_server/gcs_object_manager.h"
+#include "ray/gcs/gcs_server/gcs_package_manager.h"
 #include "ray/gcs/gcs_server/gcs_table_storage.h"
 #include "ray/gcs/pubsub/gcs_pub_sub.h"
 #include "ray/rpc/gcs_server/gcs_rpc_server.h"
@@ -25,10 +26,11 @@ namespace gcs {
 /// This implementation class of `JobInfoHandler`.
 class GcsJobManager : public rpc::JobInfoHandler {
  public:
-  explicit GcsJobManager(std::shared_ptr<gcs::GcsTableStorage> gcs_table_storage,
-                         std::shared_ptr<gcs::GcsPubSub> gcs_pub_sub)
-      : gcs_table_storage_(std::move(gcs_table_storage)),
-        gcs_pub_sub_(std::move(gcs_pub_sub)) {}
+  explicit GcsJobManager(GcsTableStorage *gcs_table_storage,
+                         GcsPackageManager *gcs_package_manager, GcsPubSub *gcs_pub_sub)
+      : gcs_table_storage_(gcs_table_storage),
+        gcs_package_manager_(gcs_package_manager),
+        gcs_pub_sub_(gcs_pub_sub) {}
 
   void HandleAddJob(const rpc::AddJobRequest &request, rpc::AddJobReply *reply,
                     rpc::SendReplyCallback send_reply_callback) override;
@@ -45,12 +47,12 @@ class GcsJobManager : public rpc::JobInfoHandler {
       std::function<void(std::shared_ptr<JobID>)> listener) override;
 
  private:
-  std::shared_ptr<gcs::GcsTableStorage> gcs_table_storage_;
-  std::shared_ptr<gcs::GcsPubSub> gcs_pub_sub_;
+  GcsTableStorage *gcs_table_storage_;
+  GcsPackageManager *gcs_package_manager_;
+  GcsPubSub *gcs_pub_sub_;
 
   /// Listeners which monitors the finish of jobs.
   std::vector<std::function<void(std::shared_ptr<JobID>)>> job_finished_listeners_;
-
   void ClearJobInfos(const JobID &job_id);
 };
 

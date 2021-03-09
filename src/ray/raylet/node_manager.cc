@@ -330,6 +330,10 @@ ray::Status NodeManager::RegisterGcs() {
   RAY_RETURN_NOT_OK(
       gcs_client_->Nodes().AsyncSubscribeToNodeChange(on_node_change, on_done));
 
+  // Register a callback to monitor new nodes and a callback to monitor removed nodes.
+  // RAY_RETURN_NOT_OK(
+  //     gcs_client_->Packages().AsyncSubscribeToNodeChange(on_node_change, on_done));
+
   // Subscribe to resource usage batches from the monitor.
   const auto &resource_usage_batch_added =
       [this](const ResourceUsageBatchData &resource_usage_batch) {
@@ -382,6 +386,8 @@ ray::Status NodeManager::RegisterGcs() {
       [this] { GetObjectManagerProfileInfo(); },
       RayConfig::instance().raylet_heartbeat_period_milliseconds());
 
+  gcs_client_->RuntimeEnv().AsyncSubscribe(
+      [this](const std::string &uri) { ProcessRuntimeCleanup(uri); }, nullptr);
   return ray::Status::OK();
 }
 
@@ -584,6 +590,19 @@ void NodeManager::HandleReleaseUnusedBundles(
   placement_group_resource_manager_->ReturnUnusedBundle(in_use_bundles);
 
   send_reply_callback(Status::OK(), nullptr, nullptr);
+}
+
+void NodeManager::ProcessRuntimeCleanup(const std::string &uri) {
+  worker_pool_.PopRuntimeEnvWorker(
+      [uri, this](std::shared_ptr<WorkerInterface> io_worker) {
+        rpc::RuntimeEnvCleanupRequest request;
+        request.set_uri(uri);
+        io_worker->rpc_client()->RuntimeEnvCleanup(
+            request, [io_worker, this](const ray::Status &status,
+                                       const rpc::RuntimeEnvCleanupReply &) {
+              worker_pool_.PushRuntimeEnvWorker(io_worker);
+            });
+      });
 }
 
 // TODO(edoakes): this function is problematic because it both sends warnings spuriously

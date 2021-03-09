@@ -69,6 +69,9 @@ void GcsServer::DoStart(const GcsInitData &gcs_init_data) {
   // Init gcs resource manager.
   InitGcsResourceManager(gcs_init_data);
 
+  // Init package manager.
+  InitPackageManager(gcs_init_data);
+
   // Init gcs resource scheduler.
   InitGcsResourceScheduler();
 
@@ -146,6 +149,11 @@ void GcsServer::InitGcsNodeManager(const GcsInitData &gcs_init_data) {
   rpc_server_.RegisterService(*node_info_service_);
 }
 
+void GcsServer::InitPackageManager(const GcsInitData &gcs_init_data) {
+  gcs_package_manager_.reset(new GcsPackageManager(gcs_pub_sub_.get()));
+  gcs_package_manager_->Initialize(gcs_init_data);
+}
+
 void GcsServer::InitGcsHeartbeatManager(const GcsInitData &gcs_init_data) {
   RAY_CHECK(gcs_node_manager_);
   gcs_heartbeat_manager_ = std::make_shared<GcsHeartbeatManager>(
@@ -182,7 +190,8 @@ void GcsServer::InitGcsResourceScheduler() {
 
 void GcsServer::InitGcsJobManager() {
   RAY_CHECK(gcs_table_storage_ && gcs_pub_sub_);
-  gcs_job_manager_.reset(new GcsJobManager(gcs_table_storage_, gcs_pub_sub_));
+  gcs_job_manager_.reset(new GcsJobManager(
+      gcs_table_storage_.get(), gcs_package_manager_.get(), gcs_pub_sub_.get()));
   // Register service.
   job_info_service_.reset(new rpc::JobInfoGrpcService(main_service_, *gcs_job_manager_));
   rpc_server_.RegisterService(*job_info_service_);
@@ -212,7 +221,7 @@ void GcsServer::InitGcsActorManager(const GcsInitData &gcs_init_data) {
         return std::make_shared<rpc::CoreWorkerClient>(address, client_call_manager_);
       });
   gcs_actor_manager_ = std::make_shared<GcsActorManager>(
-      scheduler, gcs_table_storage_, gcs_pub_sub_,
+      scheduler, gcs_table_storage_, gcs_pub_sub_, gcs_package_manager_.get(),
       [this](const ActorID &actor_id) {
         gcs_placement_group_manager_->CleanPlacementGroupIfNeededWhenActorDead(actor_id);
       },

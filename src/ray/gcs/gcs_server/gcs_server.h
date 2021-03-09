@@ -16,6 +16,7 @@
 
 #include "ray/gcs/gcs_server/gcs_heartbeat_manager.h"
 #include "ray/gcs/gcs_server/gcs_init_data.h"
+#include "ray/gcs/gcs_server/gcs_job_manager.h"
 #include "ray/gcs/gcs_server/gcs_object_manager.h"
 #include "ray/gcs/gcs_server/gcs_redis_failure_detector.h"
 #include "ray/gcs/gcs_server/gcs_resource_manager.h"
@@ -80,6 +81,8 @@ class GcsServer {
 
   /// Initialize gcs node manager.
   void InitGcsNodeManager(const GcsInitData &gcs_init_data);
+
+  void InitPackageManager(const GcsInitData &gcs_init_data);
 
   /// Initialize gcs heartbeat manager.
   void InitGcsHeartbeatManager(const GcsInitData &gcs_init_data);
@@ -166,6 +169,8 @@ class GcsServer {
   std::unique_ptr<rpc::NodeResourceInfoGrpcService> node_resource_info_service_;
   /// Heartbeat info handler and service.
   std::unique_ptr<rpc::HeartbeatInfoGrpcService> heartbeat_info_service_;
+  /// Package manager
+  std::unique_ptr<GcsPackageManager> gcs_package_manager_;
   /// Object info handler and service.
   std::unique_ptr<gcs::GcsObjectManager> gcs_object_manager_;
   std::unique_ptr<rpc::ObjectInfoGrpcService> object_info_service_;

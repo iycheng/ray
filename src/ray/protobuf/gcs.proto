@@ -145,6 +145,8 @@ message ActorTableData {
   repeated ResourceMapEntry resource_mapping = 15;
   // The process id of this actor.
   uint32 pid = 16;
+  // The runtime env of this actor.
+  RuntimeEnv runtime_env = 17;
 }
 
 message ErrorTableData {

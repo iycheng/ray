@@ -65,6 +65,7 @@ Status ServiceBasedGcsClient::Connect(boost::asio::io_service &io_service) {
     task_accessor_->AsyncResubscribe(is_pubsub_server_restarted);
     object_accessor_->AsyncResubscribe(is_pubsub_server_restarted);
     worker_accessor_->AsyncResubscribe(is_pubsub_server_restarted);
+    runtime_env_accessor_->AsyncResubscribe(is_pubsub_server_restarted);
   };
 
   // Connect to gcs service.
@@ -82,6 +83,7 @@ Status ServiceBasedGcsClient::Connect(boost::asio::io_service &io_service) {
   error_accessor_.reset(new ServiceBasedErrorInfoAccessor(this));
   worker_accessor_.reset(new ServiceBasedWorkerInfoAccessor(this));
   placement_group_accessor_.reset(new ServiceBasedPlacementGroupInfoAccessor(this));
+  runtime_env_accessor_.reset(new ServiceBasedRuntimeEnvAccessor(this));
 
   // Init gcs service address check timer.
   periodical_runner_.reset(new PeriodicalRunner(io_service));

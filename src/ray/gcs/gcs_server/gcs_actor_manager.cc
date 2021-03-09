@@ -87,12 +87,13 @@ rpc::ActorTableData *GcsActor::GetMutableActorTableData() { return &actor_table_
 GcsActorManager::GcsActorManager(
     std::shared_ptr<GcsActorSchedulerInterface> scheduler,
     std::shared_ptr<gcs::GcsTableStorage> gcs_table_storage,
-    std::shared_ptr<gcs::GcsPubSub> gcs_pub_sub,
+    std::shared_ptr<gcs::GcsPubSub> gcs_pub_sub, GcsPackageManager *gcs_package_manager,
     std::function<void(const ActorID &)> destroy_owned_placement_group_if_needed,
     const rpc::ClientFactoryFn &worker_client_factory)
     : gcs_actor_scheduler_(std::move(scheduler)),
       gcs_table_storage_(std::move(gcs_table_storage)),
       gcs_pub_sub_(std::move(gcs_pub_sub)),
+      gcs_package_manager_(gcs_package_manager),
       worker_client_factory_(worker_client_factory),
       destroy_owned_placement_group_if_needed_(destroy_owned_placement_group_if_needed) {
   RAY_CHECK(worker_client_factory_);
@@ -274,7 +275,8 @@ Status GcsActorManager::RegisterActor(const ray::rpc::RegisterActorRequest &requ
 
   actor_to_register_callbacks_[actor_id].emplace_back(std::move(success_callback));
   registered_actors_.emplace(actor->GetActorID(), actor);
-
+  gcs_package_manager_->IncrPackageReference(actor->GetActorID().Hex(),
+                                             request.task_spec().runtime_env());
   const auto &owner_address = actor->GetOwnerAddress();
   auto node_id = NodeID::FromBinary(owner_address.raylet_id());
   auto worker_id = WorkerID::FromBinary(owner_address.worker_id());
@@ -446,6 +448,7 @@ void GcsActorManager::DestroyActor(const ActorID &actor_id) {
   AddDestroyedActorToCache(it->second);
   const auto actor = std::move(it->second);
   registered_actors_.erase(it);
+  gcs_package_manager_->DecrPackageReference(actor_id.Hex());
 
   // Clean up the client to the actor's owner, if necessary.
   if (!actor->IsDetached()) {
@@ -791,7 +794,6 @@ void GcsActorManager::Initialize(const GcsInitData &gcs_init_data) {
     auto actor = std::make_shared<GcsActor>(entry.second);
     if (entry.second.state() != ray::rpc::ActorTableData::DEAD && !is_job_dead) {
       registered_actors_.emplace(entry.first, actor);
-
       if (!actor->GetName().empty()) {
         named_actors_.emplace(actor->GetName(), actor->GetActorID());
       }

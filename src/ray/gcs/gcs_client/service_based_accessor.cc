@@ -1527,5 +1527,25 @@ Status ServiceBasedPlacementGroupInfoAccessor::AsyncWaitUntilReady(
   return Status::OK();
 }
 
+ServiceBasedRuntimeEnvAccessor::ServiceBasedRuntimeEnvAccessor(
+    ServiceBasedGcsClient *client_impl)
+    : client_impl_(client_impl) {}
+
+Status ServiceBasedRuntimeEnvAccessor::AsyncSubscribe(
+    const ItemCallback<std::string> &subscribe, const StatusCallback &done) {
+  RAY_CHECK(subscribe);
+  subscribe_callback_ = subscribe;
+  auto on_subscribe = [this](const std::string &id, const std::string &data) {
+    subscribe_callback_(data);
+  };
+  return client_impl_->GetGcsPubSub().Subscribe(PACKAGE_CHANNEL, "", on_subscribe, done);
+}
+
+void ServiceBasedRuntimeEnvAccessor::AsyncResubscribe(bool is_pubsub_server_restarted) {
+  if (subscribe_callback_) {
+    AsyncSubscribe(subscribe_callback_, nullptr);
+  }
+}
+
 }  // namespace gcs
 }  // namespace ray

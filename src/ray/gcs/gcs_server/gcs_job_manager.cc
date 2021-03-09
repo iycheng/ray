@@ -33,6 +33,8 @@ void GcsJobManager::HandleAddJob(const rpc::AddJobRequest &request,
     } else {
       RAY_CHECK_OK(gcs_pub_sub_->Publish(JOB_CHANNEL, job_id.Hex(),
                                          request.data().SerializeAsString(), nullptr));
+      const auto &runtime_env = request.data().config().runtime_env();
+      gcs_package_manager_->IncrPackageReference(job_id.Hex(), runtime_env);
       RAY_LOG(INFO) << "Finished adding job, job id = " << job_id
                     << ", driver pid = " << request.data().driver_pid();
     }
@@ -59,6 +61,7 @@ void GcsJobManager::HandleMarkJobFinished(const rpc::MarkJobFinishedRequest &req
     } else {
       RAY_CHECK_OK(gcs_pub_sub_->Publish(JOB_CHANNEL, job_id.Hex(),
                                          job_table_data->SerializeAsString(), nullptr));
+      gcs_package_manager_->DecrPackageReference(job_id.Hex());
       ClearJobInfos(job_id);
       RAY_LOG(INFO) << "Finished marking job state, job id = " << job_id;
     }

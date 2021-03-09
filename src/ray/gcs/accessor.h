@@ -772,6 +772,17 @@ class PlacementGroupInfoAccessor {
   PlacementGroupInfoAccessor() = default;
 };
 
+class RuntimeEnvAccessor {
+ public:
+  virtual ~RuntimeEnvAccessor() = default;
+  virtual Status AsyncSubscribe(const ItemCallback<std::string> &subscribe,
+                                const StatusCallback &done) = 0;
+  virtual void AsyncResubscribe(bool is_pubsub_server_restarted) = 0;
+
+ protected:
+  RuntimeEnvAccessor() = default;
+};
+
 }  // namespace gcs
 
 }  // namespace ray
