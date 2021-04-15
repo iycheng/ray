@@ -1,2 +1,10 @@
 image:
   file: .gitpod/Dockerfile
+tasks:
+  - prebuild: pip3 install psutil setproctitle==1.1.10 && cd dashboard/client && npm install && npm run build && cd - && bazel build //:ray_pkg --jobs=4 && cd python && SKIP_THIRDPARTY_INSTALL=1 pip install -e .
+github:
+  prebuilds:
+    # enable for the master/default branch (defaults to true)
+    master: true
+    # enable for all branches in this repo (defaults to false)
+    branches: true
