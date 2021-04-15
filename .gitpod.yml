@@ -1,9 +1,8 @@
 image:
   file: .gitpod/Dockerfile
 tasks:
-  - init: mkdir bazel-cache -p
-    prebuild: echo "Test" > bazel-cache/abc
-#    prebuild: cd dashboard/client && npm install && npm run build && cd - && bazel build //:ray_pkg --jobs=4 && cd python && SKIP_THIRDPARTY_INSTALL=1 pip install -e .
+  - prebuild: cd dashboard/client && npm install && npm run build && cd - && bazel build //:gcs_actor_manager_test
+    #bazel build //:ray_pkg --jobs=4 && cd python && SKIP_THIRDPARTY_INSTALL=1 pip install -e .
 github:
   prebuilds:
     # enable for the master/default branch (defaults to true)
