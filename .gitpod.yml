@@ -2,7 +2,7 @@ image:
   file: .gitpod/Dockerfile
 tasks:
   - init: mkdir /workspace/ray/.cache -p && ln -s /workspace/ray/.cache $HOME/.cache
-  - prebuild: cd dashboard/client && npm install && npm run build && cd - && bazel build //:ray_pkg --jobs=4 && cd python && SKIP_THIRDPARTY_INSTALL=1 pip install -e .
+    prebuild: cd dashboard/client && npm install && npm run build && cd - && bazel build //:ray_pkg --jobs=4 && cd python && SKIP_THIRDPARTY_INSTALL=1 pip install -e .
 github:
   prebuilds:
     # enable for the master/default branch (defaults to true)
