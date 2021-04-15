@@ -5,6 +5,6 @@ tasks:
 github:
   prebuilds:
     # enable for the master/default branch (defaults to true)
-    master: true
+    master: false
     # enable for all branches in this repo (defaults to false)
     branches: true
