@@ -13,9 +13,9 @@ RUN set -x; apt update \
     && curl -fsSL https://bazel.build/bazel-release.pub.gpg | gpg --dearmor > bazel.gpg \
     && mv bazel.gpg /etc/apt/trusted.gpg.d/ \
     && echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | tee /etc/apt/sources.list.d/bazel.list \
-    && apt update && apt install bazel-3.7.2 -y
-
-RUN  pip3 install cython==0.29.0 pytest pandas tree tabulate pexpect sklearn joblib yapf==0.23.0 flake8==3.7.7 mypy==0.782 flake8-quotes psutil setproctitle==1.1.10
+    && apt update && apt install bazel-3.7.2 -y \
+    && pip3 install cython==0.29.0 pytest pandas tree tabulate pexpect sklearn joblib yapf==0.23.0 flake8==3.7.7 mypy==0.782 flake8-quotes psutil setproctitle==1.1.10 ray[all] \
+    && ray install-nightly
 
 RUN update-alternatives --install /usr/local/bin/python python /usr/bin/python3 30 \
     && update-alternatives --install /usr/bin/bazel bazel /usr/bin/bazel-3.7.2 30 \
