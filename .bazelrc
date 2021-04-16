@@ -10,7 +10,7 @@ build --compilation_mode=opt
 build:linux --cxxopt="-std=c++14"
 build:macos --cxxopt="-std=c++14"
 build:clang-cl --cxxopt="-std=c++14"
-startup --output_base=/workspace/ray/bazel-cache
+# startup --output_base=/workspace/ray/bazel-cache
 build:msvc --cxxopt="/std:c++14"
 # This workaround is needed to prevent Bazel from compiling the same file twice (once PIC and once not).
 build:linux --force_pic
