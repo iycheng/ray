@@ -1,7 +1,9 @@
 image:
   file: .gitpod/Dockerfile
 tasks:
-  - prebuild: cd dashboard/client && npm install && npm run build && cd - && bazel build //:ray_pkg --jobs=4
+   - before: mkdir bazel-cache && rm ~/.cache -rf && ln -s $(readlink -f bazel-cache) $HOME/.cache
+   - prebuild: bazel --output_base=/mnt/yic/test-cache build //:plasma_store_server_lib --jobs=4
+#  - prebuild: cd dashboard/client && npm install && npm run build && cd - && bazel build //:ray_pkg --jobs=4
 github:
   prebuilds:
     master: false
