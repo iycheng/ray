@@ -1,7 +1,8 @@
 image:
   file: .gitpod/Dockerfile
 tasks:
-   - prebuild: cd dashboard/client && npm install && npm run build && cd - && bazel build //:ray_pkg --jobs=4
+   - before: export PIP_CACHE_DIR=/workspace/ray/.pip_cache
+     prebuild: cd dashboard/client && npm install && npm run build && cd - && bazel build //:ray_pkg --jobs=4
 github:
   prebuilds:
     master: false
