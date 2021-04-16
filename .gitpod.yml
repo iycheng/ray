@@ -1,8 +1,7 @@
 image:
   file: .gitpod/Dockerfile
 tasks:
-   - before: mkdir bazel-cache && rm ~/.cache -rf && ln -s $(readlink -f bazel-cache) $HOME/.cache
-     prebuild: cd dashboard/client && npm install && npm run build && cd - && bazel build //:ray_pkg --jobs=4
+   - prebuild: cd dashboard/client && npm install && npm run build && cd - && bazel build //:ray_pkg --jobs=4
 github:
   prebuilds:
     master: false
