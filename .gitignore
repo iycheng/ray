@@ -188,5 +188,5 @@ project-id
 .mypy_cache/
 
 # gitpod cache related
-.pip_cache/
-.bazel_cache/
+.pip-cache/
+.bazel-cache/
