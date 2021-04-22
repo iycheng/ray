@@ -21,6 +21,10 @@ import urllib.request
 
 logger = logging.getLogger(__name__)
 
+"""
+Fix a bug
+"""
+
 # Ideally, we could include these files by putting them in a
 # MANIFEST.in or using the package_data argument to setup, but the
 # MANIFEST.in gets applied at the very beginning when setup.py runs
