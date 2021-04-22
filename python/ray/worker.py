@@ -78,10 +78,6 @@ def _unhandled_error_handler(e: Exception):
                  "RAY_IGNORE_UNHANDLED_ERRORS=1): {}".format(e))
 
 
-"""
-I found a bug and this is the bug I fixed it
-"""
-
 class Worker:
     """A class used to define the control flow of a worker process.
 
