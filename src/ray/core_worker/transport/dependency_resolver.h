@@ -33,12 +33,10 @@ class LocalDependencyResolver {
   /// Resolve all local and remote dependencies for the task, calling the specified
   /// callback when done. Direct call ids in the task specification will be resolved
   /// to concrete values and inlined.
-  //
-  /// Note: This method **will mutate** the given TaskSpecification.
   ///
   /// Postcondition: all direct call id arguments that haven't been spilled to plasma
   /// are converted to values and all remaining arguments are arguments in the task spec.
-  void ResolveDependencies(TaskSpecification &task, std::function<void()> on_complete);
+  void ResolveDependencies(const TaskSpecification &task, std::function<void()> on_complete);
 
   /// Return the number of tasks pending dependency resolution.
   /// TODO(ekl) this should be exposed in worker stats.
@@ -53,9 +51,6 @@ class LocalDependencyResolver {
 
   /// Number of tasks pending dependency resolution.
   std::atomic<int> num_pending_;
-
-  /// Protects against concurrent access to internal state.
-  absl::Mutex mu_;
 };
 
 }  // namespace ray

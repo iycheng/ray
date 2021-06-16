@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+#include <atomic>
 
 #include "ray/core_worker/transport/dependency_resolver.h"
 
@@ -27,13 +28,13 @@ struct TaskState {
   absl::flat_hash_map<ObjectID, std::shared_ptr<RayObject>> local_dependencies;
   /// Number of local dependencies that aren't yet resolved (have nullptrs in the above
   /// map).
-  size_t dependencies_remaining;
+  std::atomic<size_t> dependencies_remaining;
 };
 
 void InlineDependencies(
-    absl::flat_hash_map<ObjectID, std::shared_ptr<RayObject>> dependencies,
-    TaskSpecification &task, std::vector<ObjectID> *inlined_dependency_ids,
-    std::vector<ObjectID> *contained_ids) {
+    const absl::flat_hash_map<ObjectID, std::shared_ptr<RayObject>>& dependencies,
+    TaskSpecification &task, std::vector<ObjectID> &inlined_dependency_ids,
+    std::vector<ObjectID> &contained_ids) {
   auto &msg = task.GetMutableMessage();
   size_t found = 0;
   for (size_t i = 0; i < task.NumArgs(); i++) {
@@ -57,9 +58,9 @@ void InlineDependencies(
           }
           for (const auto &nested_id : it->second->GetNestedIds()) {
             mutable_arg->add_nested_inlined_ids(nested_id.Binary());
-            contained_ids->push_back(nested_id);
+            contained_ids.push_back(nested_id);
           }
-          inlined_dependency_ids->push_back(id);
+          inlined_dependency_ids.push_back(id);
         }
         found++;
       }
@@ -69,7 +70,7 @@ void InlineDependencies(
   RAY_CHECK(found >= dependencies.size());
 }
 
-void LocalDependencyResolver::ResolveDependencies(TaskSpecification &task,
+void LocalDependencyResolver::ResolveDependencies(const TaskSpecification &task,
                                                   std::function<void()> on_complete) {
   absl::flat_hash_map<ObjectID, std::shared_ptr<RayObject>> local_dependencies;
   for (size_t i = 0; i < task.NumArgs(); i++) {
@@ -95,15 +96,12 @@ void LocalDependencyResolver::ResolveDependencies(TaskSpecification &task,
       bool complete = false;
       std::vector<ObjectID> inlined_dependency_ids;
       std::vector<ObjectID> contained_ids;
-      {
-        absl::MutexLock lock(&mu_);
-        state->local_dependencies[obj_id] = std::move(obj);
-        if (--state->dependencies_remaining == 0) {
-          InlineDependencies(state->local_dependencies, state->task,
-                             &inlined_dependency_ids, &contained_ids);
-          complete = true;
-          num_pending_ -= 1;
-        }
+      state->local_dependencies[obj_id] = std::move(obj);
+      if (--state->dependencies_remaining == 0) {
+        InlineDependencies(state->local_dependencies, state->task,
+                           inlined_dependency_ids, contained_ids);
+        complete = true;
+        num_pending_ -= 1;
       }
       if (inlined_dependency_ids.size() > 0) {
         task_finisher_->OnTaskDependenciesInlined(inlined_dependency_ids, contained_ids);
