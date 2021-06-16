@@ -32,7 +32,7 @@ struct TaskState {
 };
 
 void InlineDependencies(
-    const absl::flat_hash_map<ObjectID, std::shared_ptr<RayObject>>& dependencies,
+    const absl::flat_hash_map<ObjectID, std::shared_ptr<RayObject>> &dependencies,
     TaskSpecification &task, std::vector<ObjectID> &inlined_dependency_ids,
     std::vector<ObjectID> &contained_ids) {
   auto &msg = task.GetMutableMessage();
@@ -98,8 +98,8 @@ void LocalDependencyResolver::ResolveDependencies(const TaskSpecification &task,
       std::vector<ObjectID> contained_ids;
       state->local_dependencies[obj_id] = std::move(obj);
       if (--state->dependencies_remaining == 0) {
-        InlineDependencies(state->local_dependencies, state->task,
-                           inlined_dependency_ids, contained_ids);
+        InlineDependencies(state->local_dependencies, state->task, inlined_dependency_ids,
+                           contained_ids);
         complete = true;
         num_pending_ -= 1;
       }
